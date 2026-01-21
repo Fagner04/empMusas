@@ -1,0 +1,205 @@
+{%- capture section_settings -%}
+{
+  "stackable": true,
+  "layout": "carousel",
+  "showFloatingMenu": {{ section.settings.show_floating_menu | json }},
+  "autoplay": {{ section.settings.autoplay | json }},
+  "autoplaySpeed": {{ section.settings.autoplay_speed | times: 1000 | json }}
+}
+{%- endcapture -%}
+
+{{ 'product-carousel-floating.css' | asset_url | stylesheet_tag }}
+{{ 'product-carousel-floating.js' | asset_url | script_tag }}
+
+<section class="section product-carousel-floating" data-section-id="{{ section.id }}" data-section-type="product-carousel-floating" data-section-settings='{{ section_settings }}'>
+  <div class="container">
+    <header class="section__header">
+      <div class="section__header-stack">
+        <h2 class="section__title heading h3">{{ section.settings.title | escape }}</h2>
+        {%- if section.settings.subtitle != blank -%}
+          <p class="section__subtitle">{{ section.settings.subtitle | escape }}</p>
+        {%- endif -%}
+      </div>
+    </header>
+  </div>
+
+  <div class="container container--flush">
+    <div class="product-carousel-floating__wrapper">
+      {%- comment -%} Menu flutuante de categorias {%- endcomment -%}
+      {%- if section.settings.show_floating_menu -%}
+        <div class="floating-category-menu" data-floating-menu>
+          <div class="floating-category-menu__inner">
+            <button class="floating-category-menu__toggle" data-action="toggle-floating-menu">
+              <span class="floating-category-menu__icon">
+                {% render 'floating-menu-icon', icon: 'hamburger' %}
+              </span>
+              <span class="floating-category-menu__text">Categorias</span>
+            </button>
+            
+            <div class="floating-category-menu__dropdown" data-floating-dropdown>
+              <div class="floating-category-menu__list">
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'category' -%}
+                    {%- assign collection = collections[block.settings.collection] -%}
+                    <button class="floating-category-menu__item" 
+                            data-action="filter-category" 
+                            data-collection="{{ block.settings.collection }}"
+                            data-block-id="{{ block.id }}">
+                      {{ block.settings.title | default: collection.title | escape }}
+                    </button>
+                  {%- endif -%}
+                {%- endfor -%}
+                <button class="floating-category-menu__item floating-category-menu__item--all" 
+                        data-action="show-all-products">
+                  Todos os Produtos
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Carousel de produtos {%- endcomment -%}
+      <div class="product-carousel-floating__carousel-wrapper">
+        <div class="product-carousel-floating__carousel" data-product-carousel>
+          {%- assign all_products = '' -%}
+          {%- assign product_count = 0 -%}
+          
+          {%- comment -%} Coletamos produtos de todas as coleções {%- endcomment -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'category' -%}
+              {%- assign collection = collections[block.settings.collection] -%}
+              {%- for product in collection.products limit: section.settings.products_per_category -%}
+                {%- unless all_products contains product.id -%}
+                  {%- assign all_products = all_products | append: product.id | append: ',' -%}
+                  
+                  <div class="product-carousel-floating__item" 
+                       data-product-id="{{ product.id }}" 
+                       data-collection="{{ block.settings.collection }}"
+                       data-block-id="{{ block.id }}">
+                    {%- render 'product-item', 
+                        product: product, 
+                        show_add_to_cart: section.settings.show_quick_buy,
+                        show_secondary_image: section.settings.show_secondary_image -%}
+                  </div>
+                  
+                  {%- assign product_count = product_count | plus: 1 -%}
+                {%- endunless -%}
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endfor -%}
+          
+          {%- comment -%} Se não há produtos, mostra placeholders {%- endcomment -%}
+          {%- if product_count == 0 -%}
+            {%- for i in (1..8) -%}
+              <div class="product-carousel-floating__item">
+                {%- render 'product-item-placeholder', show_add_to_cart: false -%}
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+{% schema %}
+{
+  "name": "Carousel de Produtos com Menu",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Produtos em Destaque"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtítulo"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_floating_menu",
+      "label": "Mostrar menu flutuante",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_category",
+      "label": "Produtos por categoria",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_buy",
+      "label": "Mostrar compra rápida",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Mostrar imagem secundária no hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Reprodução automática",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Velocidade da reprodução automática (segundos)",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Categoria",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Coleção"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título personalizado",
+          "info": "Se vazio, usa o nome da coleção"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Carousel de Produtos com Menu",
+      "category": "Product",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
