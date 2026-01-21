@@ -1,0 +1,1342 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Classic®",
+    "theme_author": "dropmeta.com.br",
+    "theme_version": "4.8",
+    "theme_documentation_url": "https:\/\/dropmeta.com.br\/",
+    "theme_support_url": "https:\/\/dropmeta.com.br\/"
+  },
+  {
+    "name": "Pop-up | EasyCoding",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "popup_home",
+        "label": "Pop-up Home",
+        "default": true
+      },
+      {
+      "type": "image_picker",
+      "id": "popup_image",
+      "label": "Imagem do popup"
+      },
+      {
+          "type": "url",
+          "id": "img_popup",
+          "label": "Insira o link de destino"
+      },
+      {
+      "type": "range",
+      "id": "cookie_time",
+      "label": "Tempo do cookie em minutos",
+      "min": 1,
+      "max": 60,
+      "step": 1,
+      "default": 1
+    }
+    ]
+  },
+  {
+    "name": "Cores",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Geral",
+        "info": "Tema original [Dropmeta](https:\/\/dropmeta.com.br\/tema). Se comprado em sites de terceiros sem licença oficial, estará sujeito a processos judiciais."
+      },
+      {
+        "type": "color",
+        "id": "heading_color",
+        "label": "Títulos",
+        "default": "#1c1b1b"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "Corpo dos textos",
+        "default": "#677279"
+      },
+      {
+        "type": "color",
+        "id": "accent_color",
+        "label": "Acento",
+        "default": "#00badb"
+      },
+      {
+        "type": "color",
+        "id": "link_color",
+        "label": "Cor dos links",
+        "default": "#838383"
+      },
+      {
+        "type": "color",
+        "id": "border_color",
+        "label": "Bordas",
+        "default": "#e1e3e4"
+      },
+      {
+        "type": "color",
+        "id": "background",
+        "label": "Background",
+        "default": "#f3f5f6"
+      },
+      {
+        "type": "color",
+        "id": "secondary_background",
+        "label": "Background secundário",
+        "info": "Para melhores resultados, o fundo secundário não deve estar muito longe do fundo primário",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "error_color",
+        "label": "Mensagens de erro",
+        "default": "#ff0000"
+      },
+      {
+        "type": "color",
+        "id": "success_color",
+        "label": "Mensagens de sucesso",
+        "default": "#00aa00"
+      },
+      {
+        "type": "header",
+        "content": "Botão primário"
+      },
+      {
+        "type": "color",
+        "id": "primary_button_background",
+        "label": "Background",
+        "default": "#00badb"
+      },
+      {
+        "type": "color",
+        "id": "primary_button_text_color",
+        "label": "Texto",
+        "default": "#ffffff"
+      },
+      {
+        "type": "header",
+        "content": "Botão de compra"
+      },
+      {
+        "type": "color",
+        "id": "btn_primary_color_buy",
+        "label": "Background",
+        "default": "#12C500"
+      },
+      {
+        "type": "color",
+        "id": "btn_primary_color_buy_text",
+        "label": "Texto",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "checkbox",
+        "id": "active_btn_animation_normal",
+        "label": "Animação pulsante",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "active_btn_animation",
+        "label": "Animação ao passar o mouse",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Botão secundário"
+      },
+      {
+        "type": "color",
+        "id": "secondary_button_background",
+        "label": "Background",
+        "default": "#1e2d7d"
+      },
+      {
+        "type": "color",
+        "id": "secondary_button_text_color",
+        "label": "Texto",
+        "default": "#ffffff"
+      },
+      {
+        "type": "header",
+        "content": "Rodapé"
+      },
+      {
+        "type": "color",
+        "id": "footer_background",
+        "label": "Cor do rodapé",
+        "default": "#ff0000"
+      },
+      {
+        "type": "color",
+        "id": "footer_text_color",
+        "label": "Textos do rodapé",
+        "default": "#ff0000"
+      },
+      {
+        "type": "header",
+        "content": "Cabeçalho"
+      },
+      {
+        "type": "color",
+        "id": "header_background",
+        "label": "Cor do fundo",
+        "default": "#1e2d7d"
+      },
+      {
+        "type": "color",
+        "id": "header_text_color",
+        "label": "Texto",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "header_light_text_color",
+        "label": "Textos secundários",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_icons_header",
+        "label": "Ícones",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "header_accent_color",
+        "label": "Acento",
+        "default": "#00badb"
+      },
+      {
+        "type": "header",
+        "content": "Menu do cabeçalho"
+      },
+      {
+        "type": "color",
+        "id": "header_bar_background",
+        "label": "Cor do fundo",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "header_bar_text_color",
+        "label": "Texto",
+        "default": "#4B5464"
+      },
+      {
+        "type": "header",
+        "content": "Produtos"
+      },
+      {
+        "type": "color",
+        "id": "product_on_sale_accent",
+        "label": "Economia - página inicial",
+        "default": "#ee0000"
+      },
+      {
+        "type": "color",
+        "id": "discount_percentage_background",
+        "label": "Economia - página do produto",
+        "default": "#ee0000"
+      },
+      {
+        "type": "color",
+        "id": "product_cor_do_preco_semdesc",
+        "label": "Cor do preço",
+        "default": "#1fc06f"
+      },
+      {
+        "type": "color",
+        "id": "product_cor_do_preco",
+        "label": "Cor do preço com desconto",
+        "default": "#1fc06f"
+      },
+      {
+        "type": "color",
+        "id": "product_cor_do_preco_riscado",
+        "label": "Cor do preço riscado",
+        "default": "#1fc06f"
+      },
+      {
+        "type": "color",
+        "id": "product_cor_dos_titles",
+        "label": "Títulos das informações",
+        "default": "#0086ff"
+      },
+      {
+        "type": "color",
+        "id": "product_in_stock_color",
+        "label": "Em estoque",
+        "default": "#00a500"
+      },
+      {
+        "type": "color",
+        "id": "product_low_stock_color",
+        "label": "Baixo estoque",
+        "default": "#ee0000"
+      },
+      {
+        "type": "color",
+        "id": "product_sold_out_color",
+        "label": "Esgotado",
+        "default": "#8a9297"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Tema original [Dropmeta](https:\/\/dropmeta.com.br\/tema). Se comprado em sites de terceiros sem licença oficial, estará sujeito a processos judiciais."
+      },
+      {
+        "type": "header",
+        "content": "Arredondamento"
+      },
+      {
+        "type": "range",
+        "id": "border_radius_theme",
+        "min": 8,
+        "max": 32,
+        "step": 4,
+        "unit": "px",
+        "label": "Arredondamento do layout",
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "border_radius_btn",
+        "min": 8,
+        "max": 32,
+        "step": 4,
+        "unit": "px",
+        "label": "Arredondamento dos botões",
+        "default": 12
+      }
+    ]
+  },
+  {
+    "name": "Produtos",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Tema original [Dropmeta](https:\/\/dropmeta.com.br\/tema). Se comprado em sites de terceiros sem licença oficial, estará sujeito a processos judiciais."
+      },
+      {
+        "type": "header",
+        "content": "Frete Grátis Personalizado",
+        "info": "Configure o frete grátis personalizado por categorias, produtos ou tags"
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_enable",
+        "label": "Ativar frete grátis personalizado",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_min_value",
+        "label": "Valor mínimo padrão para frete grátis",
+        "info": "Valor em reais (ex: 199.90). Deixe vazio para frete grátis sempre",
+        "default": "199.90"
+      },
+      {
+        "type": "select",
+        "id": "free_shipping_display_mode",
+        "label": "Modo de exibição",
+        "options": [
+          {
+            "value": "badge",
+            "label": "Badge/Selo"
+          },
+          {
+            "value": "text",
+            "label": "Texto simples"
+          },
+          {
+            "value": "banner",
+            "label": "Banner destacado"
+          }
+        ],
+        "default": "badge"
+      },
+      {
+        "type": "color",
+        "id": "free_shipping_bg_color",
+        "label": "Cor de fundo do frete grátis",
+        "default": "#00c851"
+      },
+      {
+        "type": "color",
+        "id": "free_shipping_text_color",
+        "label": "Cor do texto do frete grátis",
+        "default": "#ffffff"
+      },
+      {
+        "type": "header",
+        "content": "Configuração por Categorias"
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_by_collections",
+        "label": "Ativar frete grátis por categorias",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_collections_list",
+        "label": "Categorias com frete grátis",
+        "info": "Digite os handles das categorias separados por vírgula (ex: roupas,calcados,acessorios)"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_collections_min_value",
+        "label": "Valor mínimo para categorias específicas",
+        "info": "Valor em reais. Deixe vazio para frete grátis sempre nessas categorias"
+      },
+      {
+        "type": "header",
+        "content": "Configuração por Tags"
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_by_tags",
+        "label": "Ativar frete grátis por tags",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_tags_list",
+        "label": "Tags com frete grátis",
+        "info": "Digite as tags separadas por vírgula (ex: frete-gratis,promo-frete,vip)",
+        "default": "frete-gratis"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_tags_min_value",
+        "label": "Valor mínimo para produtos com tags específicas",
+        "info": "Valor em reais. Deixe vazio para frete grátis sempre para essas tags"
+      },
+      {
+        "type": "header",
+        "content": "Configuração por Produtos Específicos"
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_by_products",
+        "label": "Ativar frete grátis por produtos específicos",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_products_list",
+        "label": "IDs dos produtos com frete grátis",
+        "info": "Digite os IDs dos produtos separados por vírgula (ex: 123456789,987654321)"
+      },
+      {
+        "type": "header",
+        "content": "Mensagens Personalizadas"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_message_default",
+        "label": "Mensagem padrão",
+        "default": "🚚 Frete Grátis"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_message_min_value",
+        "label": "Mensagem com valor mínimo",
+        "info": "Use {value} para mostrar o valor mínimo",
+        "default": "🚚 Frete Grátis acima de R$ {value}"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_message_category",
+        "label": "Mensagem para categorias específicas",
+        "default": "🚚 Frete Grátis nesta categoria"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_message_tag",
+        "label": "Mensagem para tags específicas",
+        "default": "🚚 Frete Grátis especial"
+      },
+      {
+        "type": "header",
+        "content": "Configurações Avançadas"
+      },
+      {
+        "type": "select",
+        "id": "free_shipping_priority",
+        "label": "Prioridade das regras",
+        "info": "Qual regra tem prioridade quando múltiplas se aplicam",
+        "options": [
+          {
+            "value": "product_first",
+            "label": "Produto > Tag > Categoria > Padrão"
+          },
+          {
+            "value": "tag_first",
+            "label": "Tag > Produto > Categoria > Padrão"
+          },
+          {
+            "value": "category_first",
+            "label": "Categoria > Tag > Produto > Padrão"
+          }
+        ],
+        "default": "product_first"
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_show_on_cart",
+        "label": "Mostrar no carrinho",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_show_on_product",
+        "label": "Mostrar na página do produto",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_show_on_collection",
+        "label": "Mostrar na listagem de produtos",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Estrelas"
+      },
+      {
+        "type": "checkbox",
+        "id": "mostrar_estrelas_ryviu",
+        "label": "Mostrar estrelas Ryviu",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "mostrar_estrelas",
+        "label": "Mostrar 5 estrelas",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "corstars",
+        "label": "Cor das estrelas",
+        "default": "#ffffff"
+      },
+      {
+        "type": "header",
+        "content": "Imagem Natalina",
+        "info": "Configure em quais categorias a imagem natalina deve aparecer nos produtos"
+      },
+      {
+        "type": "checkbox",
+        "id": "mostrar_bfimg",
+        "label": "Mostrar imagem natalina",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "bfimg_mode",
+        "label": "Modo de exibição",
+        "options": [
+          {
+            "value": "categories",
+            "label": "Por categorias específicas"
+          },
+          {
+            "value": "tags",
+            "label": "Por tags (modo antigo)"
+          },
+          {
+            "value": "all",
+            "label": "Em todos os produtos"
+          }
+        ],
+        "default": "categories"
+      },
+      {
+        "type": "text",
+        "id": "bfimg_categories",
+        "label": "Categorias para imagem natalina",
+        "info": "Digite os handles das categorias separados por vírgula (ex: natal,presentes,decoracao)"
+      },
+      {
+        "type": "text",
+        "id": "bfimg_tags",
+        "label": "Tags para imagem natalina (modo antigo)",
+        "info": "Digite as tags separadas por vírgula (ex: blackfriday,natal)",
+        "default": "blackfriday"
+      },
+      {
+        "type": "header",
+        "content": "Outros"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Mostrar vendedor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_secondary_image",
+        "label": "Mostrar imagem secundária ao passar o mouse",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_discount",
+        "label": "Mostrar desconto",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "discount_mode",
+        "label": "Mostrar o desconto como...",
+        "options": [
+          {
+            "value": "percentage",
+            "label": "Porcentagem"
+          },
+          {
+            "value": "saving",
+            "label": "Salvo"
+          }
+        ],
+        "default": "saving"
+      },
+      {
+        "type": "select",
+        "id": "product_price_position",
+        "label": "Posição do preço",
+        "options": [
+          {
+            "value": "before_title",
+            "label": "Antes do título do produto"
+          },
+          {
+            "value": "after_title",
+            "label": "Após o título do produto"
+          }
+        ],
+        "default": "after_title"
+      },
+      {
+        "type": "select",
+        "id": "product_image_size",
+        "label": "Tamanho da imagem do produto",
+        "options": [
+          {
+            "value": "natural",
+            "label": "Natural"
+          },
+          {
+            "value": "short",
+            "label": "Curto (4:3)"
+          },
+          {
+            "value": "square",
+            "label": "Quadrado (1:1)"
+          },
+          {
+            "value": "tall",
+            "label": "Alto (2:3)"
+          }
+        ],
+        "default": "natural"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_color_swatch",
+        "label": "Mostrar amostra de cores",
+        "info": "As cores parecem brancas? [Learn more](http:\/\/support.maestrooo.com\/article\/80-product-uploading-custom-color-for-color-swatch)",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_inventory_quantity",
+        "label": "Mostrar inventário",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "low_inventory_threshold",
+        "label": "Limite de estoque baixo",
+        "info": "Mostre a quantidade de estoque em vermelho quando a quantidade estiver abaixo do limite. Escolha 0 para sempre mostrar em estoque, se disponível.",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "show_reviews_badge",
+        "label": "Mostrar selo de comentários",
+        "info": "Você precisa instalar o [Shopify's free Product Reviews](https:\/\/apps.shopify.com\/product-reviews) caso queira o padrão da Shopify.",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Bloqueadores",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Funções",
+        "info": "Tema original [Dropmeta](https:\/\/dropmeta.com.br\/tema). Se comprado em sites de terceiros sem licença oficial, estará sujeito a processos judiciais."
+      },
+      {
+        "type": "checkbox",
+        "id": "ali_hunter_enable",
+        "label": "Bloquear AliHunter",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "botao_direito_enable",
+        "label": "Bloquear botão direito",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "atalho_f12_enable",
+        "label": "Bloquear F12",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "selecionar_conteudo_enable",
+        "label": "Bloquear seleção de conteúdo",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Bloqueador Anti-Purchase"
+      },
+      {
+        "type": "text",
+        "id": "id_for_pixel",
+        "label": "ID do Pixel",
+        "info": "Identifique o ID através do código do pixel ou assista a aula na plataforma do curso Dropmeta.",
+        "default": "Ex: 639930830767149"
+      }
+    ]
+  },
+  {
+    "name": "Parcelamentos",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_parcelamento",
+        "label": "Mostrar parcelamento",
+        "info": "Alterará em todos os locais presentes no tema",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "mostrar_parcelascomo",
+        "label": "Informar juros nas parcelas",
+        "options": [
+          {
+            "value": "info_juros",
+            "label": "Informar juros"
+          },
+          {
+            "value": "info_sem_juros",
+            "label": "Informar sem juros"
+          },
+          {
+            "value": "no_info_juros",
+            "label": "Ocultar juros"
+          }
+        ],
+        "default": "no_info_juros"
+      },
+      {
+        "type": "text",
+        "id": "porcentagem_de_juros",
+        "label": "Informe a Porcentagem de juros",
+        "info": "Digite o valor do percentual a partir do número 1 e o ponto. Caso queira deixar SEM JUROS, você deve deixar apenas o número 1 como resposta.",
+        "default": "1.2161"
+      },
+      {
+        "type": "range",
+        "id": "qty_vezes",
+        "label": "Em até quantas vezes",
+        "min": 1,
+        "max": 12,
+        "step": 1,
+        "default": 12
+      }
+    ]
+  },
+  {
+    "name": "Whatsapp",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Botão WhatsApp",
+        "info": "Tema original [Dropmeta](https:\/\/dropmeta.com.br\/tema). Se comprado em sites de terceiros sem licença oficial, estará sujeito a processos judiciais."
+      },
+      {
+        "type": "checkbox",
+        "id": "addzap",
+        "label": "Ativa o botão de WhatsApp no site",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "numberzap",
+        "label": "Número do WhatsApp",
+        "info": "Crie seu link na [Umbler Contate Me](https:\/\/www.contate.me\/)"
+      },
+      {
+        "type": "select",
+        "id": "zap_icon_type",
+        "label": "Tipo de ícone",
+        "options": [
+          {
+            "value": "original",
+            "label": "Original"
+          },
+          {
+            "value": "img",
+            "label": "Imagem"
+          }
+        ],
+        "default": "original"
+      },
+      {
+        "type": "image_picker",
+        "id": "zap_icon",
+        "label": "Ícone do botão",
+        "info": "360 x 360px .png recomendado"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_online_icon",
+        "label": "Online",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Imagem de perfil"
+      },
+      {
+        "type": "select",
+        "id": "zap_img_type",
+        "label": "Tipo de imagem",
+        "options": [
+          {
+            "value": "icone",
+            "label": "Ícone"
+          },
+          {
+            "value": "img",
+            "label": "Imagem"
+          }
+        ],
+        "default": "icone"
+      },
+      {
+        "type": "image_picker",
+        "id": "zap_img",
+        "label": "Imagem de perfil",
+        "info": "360 x 360px .png recomendado"
+      },
+      {
+        "type": "text",
+        "id": "titlezap",
+        "label": "Título da box",
+        "default": "Fale conosco"
+      },
+      {
+        "type": "text",
+        "id": "txtzap",
+        "label": "Sub-título da box",
+        "default": "O melhor suporte é com a (Sua Loja)!"
+      },
+      {
+        "type": "color",
+        "id": "colorzap",
+        "label": "Selecione a cor do Box",
+        "info": "Troque a cor de fundo",
+        "default": "#25D366"
+      },
+      {
+        "type": "textarea",
+        "id": "chatzap",
+        "label": "Texto da mensagem",
+        "info": "Personalize a escrita no chat"
+      },
+      {
+        "type": "textarea",
+        "id": "digizap",
+        "label": "Texto onde vai escrever",
+        "info": "O texto que mostra para o cliente"
+      },
+      {
+        "type": "header",
+        "content": "Equipe Dropmeta"
+      },
+      {
+        "type": "paragraph",
+        "content": "Código fornecido por [Dropmeta](https:\/\/dropmeta.com.br\/) Obrigado por nos apoiar!"
+      }
+    ]
+  },
+  {
+    "name": "Tipografia",
+    "settings": [
+      {
+        "type": "range",
+        "id": "base_text_font_size",
+        "label": "Tamanho básico",
+        "info": "Todos os textos, incluindo títulos, serão dimensionados de acordo.",
+        "min": 14,
+        "max": 17,
+        "unit": "px",
+        "default": 15
+      },
+      {
+        "type": "header",
+        "content": "Títulos"
+      },
+      {
+        "type": "font_picker",
+        "id": "heading_font",
+        "label": "Fonte",
+        "default": "helvetica_n4"
+      },
+      {
+        "type": "header",
+        "content": "Texto de corpo"
+      },
+      {
+        "type": "font_picker",
+        "id": "text_font",
+        "label": "Fonte",
+        "default": "helvetica_n4"
+      },
+      {
+        "type": "checkbox",
+        "id": "underline_links",
+        "label": "Sublinhar links",
+        "info": "Aplica-se apenas a links definidos em campos de rich text.",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Animações",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "animation_image_zoom",
+        "label": "Ativar zoom da imagem ao passar o mouse",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Pesquisa",
+    "settings": [
+      {
+        "type": "select",
+        "id": "search_mode",
+        "label": "Pesquisar apenas...",
+        "options": [
+          {
+            "value": "product",
+            "label": "Somente produtos"
+          },
+          {
+            "value": "product,page",
+            "label": "Produtos e páginas"
+          },
+          {
+            "value": "product,article",
+            "label": "Produtos e postagens de blog"
+          },
+          {
+            "value": "product,article,page",
+            "label": "Produtos, postagens de blog e páginas"
+          }
+        ],
+        "default": "product,article"
+      }
+    ]
+  },
+  {
+    "name": "Carrinho",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Tipo de carrinho",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Drawer"
+          },
+          {
+            "value": "page",
+            "label": "Page"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "url",
+        "id": "cart_empty_button_link",
+        "label": "Link do botão vazio",
+        "default": "\/collections\/all"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_free_shipping_threshold",
+        "label": "Mostrar valor mínimo de frete grátis",
+        "info": "Certifique-se de que configurou corretamente o seu [Taxas de Envio](\/admin\/settings\/shipping).",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "cart_free_shipping_threshold",
+        "label": "Frete grátis valor mínimo",
+        "info": "Escreva apenas um número, sem letras. A redação pode ser alterada em [Opções de Linguagem](https:\/\/support.maestrooo.com\/article\/55-changing-themes-wording).",
+        "default": "50"
+      },
+      {
+        "type": "header",
+        "content": "Aviso do Carrinho"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_warning_enable",
+        "label": "Ativar aviso do carrinho",
+        "info": "Mostra um popup de aviso quando o carrinho é aberto",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "cart_warning_title",
+        "label": "Título do aviso",
+        "default": "Atenção!"
+      },
+      {
+        "type": "textarea",
+        "id": "cart_warning_message",
+        "label": "Mensagem do aviso",
+        "default": "Verifique os itens do seu carrinho antes de finalizar a compra."
+      },
+      {
+        "type": "select",
+        "id": "cart_warning_type",
+        "label": "Tipo de aviso",
+        "options": [
+          {
+            "value": "info",
+            "label": "Informação"
+          },
+          {
+            "value": "warning",
+            "label": "Aviso"
+          },
+          {
+            "value": "success",
+            "label": "Sucesso"
+          },
+          {
+            "value": "error",
+            "label": "Erro"
+          }
+        ],
+        "default": "info"
+      },
+      {
+        "type": "color",
+        "id": "cart_warning_bg_color",
+        "label": "Cor de fundo do popup",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "cart_warning_text_color",
+        "label": "Cor do texto",
+        "default": "#333333"
+      },
+      {
+        "type": "range",
+        "id": "cart_warning_delay",
+        "label": "Atraso para mostrar (segundos)",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_warning_show_once",
+        "label": "Mostrar apenas uma vez por sessão",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Feliz Ano Novo",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Card de Feliz Ano Novo",
+        "info": "Configure o card de Feliz Ano Novo com cupom de desconto"
+      },
+      {
+        "type": "checkbox",
+        "id": "ano_novo_card_enable",
+        "label": "Ativar card de Feliz Ano Novo",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "ano_novo_card_icon",
+        "label": "Ícone/Emoji do card",
+        "default": "🎉"
+      },
+      {
+        "type": "text",
+        "id": "ano_novo_card_title",
+        "label": "Título do card",
+        "default": "Feliz Ano Novo!"
+      },
+      {
+        "type": "textarea",
+        "id": "ano_novo_card_message",
+        "label": "Mensagem do card",
+        "default": "Que 2025 seja repleto de alegrias, conquistas e momentos especiais!"
+      },
+      {
+        "type": "header",
+        "content": "Configuração do Cupom"
+      },
+      {
+        "type": "checkbox",
+        "id": "ano_novo_show_coupon",
+        "label": "Mostrar seção de cupom",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "ano_novo_coupon_label",
+        "label": "Rótulo do cupom",
+        "default": "🎁 Oferta Especial"
+      },
+      {
+        "type": "textarea",
+        "id": "ano_novo_coupon_description",
+        "label": "Descrição do cupom",
+        "default": "Use o cupom abaixo e ganhe desconto especial!"
+      },
+      {
+        "type": "text",
+        "id": "ano_novo_coupon_code",
+        "label": "Código do cupom",
+        "info": "Digite o código do cupom que será copiado pelo cliente"
+      },
+      {
+        "type": "text",
+        "id": "ano_novo_coupon_validity",
+        "label": "Validade do cupom",
+        "info": "Ex: Válido até 31/01/2025"
+      },
+      {
+        "type": "header",
+        "content": "Botão de Ação"
+      },
+      {
+        "type": "checkbox",
+        "id": "ano_novo_show_shop_button",
+        "label": "Mostrar botão de comprar",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "ano_novo_shop_button_text",
+        "label": "Texto do botão",
+        "default": "Começar a Comprar"
+      },
+      {
+        "type": "header",
+        "content": "Cores do Card"
+      },
+      {
+        "type": "color",
+        "id": "ano_novo_card_bg_color",
+        "label": "Cor de fundo do card",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "ano_novo_card_title_color",
+        "label": "Cor do título",
+        "default": "#1a1a1a"
+      },
+      {
+        "type": "color",
+        "id": "ano_novo_card_text_color",
+        "label": "Cor do texto",
+        "default": "#666666"
+      },
+      {
+        "type": "header",
+        "content": "Cores do Cupom"
+      },
+      {
+        "type": "color",
+        "id": "ano_novo_coupon_bg_color_1",
+        "label": "Cor de fundo do cupom (início)",
+        "default": "#f59e0b"
+      },
+      {
+        "type": "color",
+        "id": "ano_novo_coupon_bg_color_2",
+        "label": "Cor de fundo do cupom (fim)",
+        "default": "#f97316"
+      },
+      {
+        "type": "header",
+        "content": "Cores do Botão"
+      },
+      {
+        "type": "color",
+        "id": "ano_novo_button_color_1",
+        "label": "Cor do botão (início)",
+        "default": "#3b82f6"
+      },
+      {
+        "type": "color",
+        "id": "ano_novo_button_color_2",
+        "label": "Cor do botão (fim)",
+        "default": "#1d4ed8"
+      },
+      {
+        "type": "color",
+        "id": "ano_novo_button_text_color",
+        "label": "Cor do texto do botão",
+        "default": "#ffffff"
+      },
+      {
+        "type": "header",
+        "content": "Configurações Avançadas"
+      },
+      {
+        "type": "checkbox",
+        "id": "ano_novo_show_once",
+        "label": "Mostrar apenas uma vez por sessão",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "ano_novo_auto_close",
+        "label": "Fechar automaticamente",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "ano_novo_auto_close_time",
+        "label": "Tempo para fechar automaticamente (segundos)",
+        "min": 5,
+        "max": 60,
+        "step": 5,
+        "default": 15
+      }
+    ]
+  },
+  {
+    "name": "Redes Sociais",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Contas"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "info": "https:\/\/www.facebook.com\/shopify",
+        "label": "Facebook"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter",
+        "info": "https:\/\/twitter.com\/shopify",
+        "label": "Twitter"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "info": "https:\/\/www.pinterest.com\/shopify",
+        "label": "Pinterest"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "info": "https:\/\/instagram.com\/dropmeta",
+        "label": "Instagram"
+      },
+      {
+        "type": "text",
+        "id": "social_vimeo",
+        "info": "https:\/\/vimeo.com\/dropmeta",
+        "label": "Vimeo"
+      },
+      {
+        "type": "text",
+        "id": "social_tumblr",
+        "info": "https:\/\/dropmeta.tumblr.com",
+        "label": "Tumblr"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "info": "https:\/\/www.youtube.com\/user\/dropmeta",
+        "label": "YouTube"
+      },
+      {
+        "type": "text",
+        "id": "social_linkedin",
+        "info": "https:\/\/linkedin.com\/in\/dropmeta",
+        "label": "LinkedIn"
+      },
+      {
+        "type": "text",
+        "id": "social_snapchat",
+        "info": "https:\/\/snapchat.com\/add\/dropmeta",
+        "label": "Snapchat"
+      },
+      {
+        "type": "text",
+        "id": "social_fancy",
+        "info": "https:\/\/fancy.com\/dropmeta",
+        "label": "Fancy"
+      }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Imagem",
+        "info": "96 x 96px .png recomendado"
+      }
+    ]
+  }
+]

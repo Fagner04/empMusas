@@ -1,0 +1,32 @@
+          {%- if section.settings.show_quantity_selector -%}
+             <div class="product-form__info-item product-form__info-item--quantity qty-border">
+
+              <div class="product-form__info-content" style="display: block;">
+                
+                
+                <div id='myform2' class="qty-align" method='POST' action='#'>
+                  <input type='button' value='-' class='qtyminus' field='quantity' />
+                  <input type='text' name='quantity' value='1' class='qty' />
+                  <input type='button' value='+' class='qtyplus' field='quantity' />
+                </div>
+                
+              </div>
+            </div>
+<!-- Qnd o btn é ativado, automaticamente deixa o btn add to cart com wdth menor -->
+<style>
+  .add-to-cart-style {
+    width: 75%!important;
+  }
+
+  .display-align-btn-add-qty {
+    height: 48px;
+  }
+
+  .btn-whatsapp-buy {
+    margin-top: 8px;
+  }
+
+</style>
+          {%- else -%}
+            <input type="hidden" name="quantity" value="1">            
+          {%- endif -%}

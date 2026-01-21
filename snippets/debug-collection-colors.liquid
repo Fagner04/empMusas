@@ -1,0 +1,141 @@
+{%- comment -%}
+  DEBUG: Metacampos de Cores da Coleção
+  Adicione este snippet na página do produto para ver o que está acontecendo
+{%- endcomment -%}
+
+<div style="background: #f0f0f0; border: 3px solid #ff0000; padding: 20px; margin: 20px 0; font-family: monospace; font-size: 12px;">
+  <h3 style="color: #ff0000; margin-top: 0;">🔍 DEBUG - Cores da Coleção</h3>
+  
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #0066cc;">
+    <strong>📦 PRODUTO:</strong> {{ product.title }}<br>
+    <strong>ID:</strong> {{ product.id }}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #9900cc;">
+    <strong>🏷️ COLEÇÕES DO PRODUTO:</strong><br>
+    {%- if product.collections.size > 0 -%}
+      {%- for col in product.collections -%}
+        • {{ col.title }} (ID: {{ col.id }})<br>
+      {%- endfor -%}
+    {%- else -%}
+      ❌ Produto não está em nenhuma coleção!
+    {%- endif -%}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #cc6600;">
+    <strong>🎨 COLEÇÃO ATUAL (collection):</strong><br>
+    {%- if collection -%}
+      • Nome: {{ collection.title }}<br>
+      • ID: {{ collection.id }}<br>
+      • Handle: {{ collection.handle }}
+    {%- else -%}
+      ❌ Nenhuma coleção atual (collection vazio)
+    {%- endif -%}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #00cc66;">
+    <strong>🎯 METACAMPO DA COLEÇÃO ATUAL:</strong><br>
+    {%- if collection -%}
+      {%- if collection.metafields.custom.color_mapping.value != blank -%}
+        ✅ collection.metafields.custom.color_mapping.value:<br>
+        <code style="background: #ffffcc; padding: 2px 5px;">{{ collection.metafields.custom.color_mapping.value }}</code>
+      {%- elsif collection.metafields.custom.color_mapping != blank -%}
+        ✅ collection.metafields.custom.color_mapping:<br>
+        <code style="background: #ffffcc; padding: 2px 5px;">{{ collection.metafields.custom.color_mapping }}</code>
+      {%- else -%}
+        ❌ Coleção atual NÃO tem metacampo color_mapping
+      {%- endif -%}
+    {%- else -%}
+      ⚠️ Não há coleção atual para verificar
+    {%- endif -%}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #cc0066;">
+    <strong>🔍 METACAMPOS DE TODAS AS COLEÇÕES:</strong><br>
+    {%- if product.collections.size > 0 -%}
+      {%- for col in product.collections -%}
+        <div style="margin: 5px 0; padding: 5px; background: #f9f9f9;">
+          <strong>{{ col.title }}:</strong><br>
+          {%- if col.metafields.custom.color_mapping.value != blank -%}
+            ✅ .value: <code style="background: #ccffcc; padding: 2px 5px;">{{ col.metafields.custom.color_mapping.value }}</code>
+          {%- elsif col.metafields.custom.color_mapping != blank -%}
+            ✅ direto: <code style="background: #ccffcc; padding: 2px 5px;">{{ col.metafields.custom.color_mapping }}</code>
+          {%- else -%}
+            ❌ Sem metacampo color_mapping
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      ❌ Produto não tem coleções
+    {%- endif -%}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #cc9900;">
+    <strong>📋 METACAMPO DO PRODUTO:</strong><br>
+    {%- if product.metafields.custom.color_mapping.value != blank -%}
+      ✅ product.metafields.custom.color_mapping.value:<br>
+      <code style="background: #ffffcc; padding: 2px 5px;">{{ product.metafields.custom.color_mapping.value }}</code>
+    {%- elsif product.metafields.custom.color_mapping != blank -%}
+      ✅ product.metafields.custom.color_mapping:<br>
+      <code style="background: #ffffcc; padding: 2px 5px;">{{ product.metafields.custom.color_mapping }}</code>
+    {%- else -%}
+      ⚠️ Produto não tem metacampo color_mapping próprio
+    {%- endif -%}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #6600cc;">
+    <strong>🚫 IGNORAR CORES DA COLEÇÃO:</strong><br>
+    {%- if product.metafields.custom.ignore_collection_colors == 'true' or product.metafields.custom.ignore_collection_colors == true -%}
+      ⚠️ SIM - Produto está configurado para IGNORAR cores da coleção
+    {%- else -%}
+      ✅ NÃO - Produto pode usar cores da coleção
+    {%- endif -%}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #cc0000;">
+    <strong>🎨 OPÇÕES DE COR DO PRODUTO:</strong><br>
+    {%- for option in product.options_with_values -%}
+      {%- assign downcase_option = option.name | downcase -%}
+      {%- if downcase_option contains 'cor' or downcase_option contains 'color' -%}
+        <strong>Opção: {{ option.name }}</strong><br>
+        Valores:<br>
+        {%- for value in option.values -%}
+          • {{ value }}<br>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  <div style="background: #ffffcc; padding: 10px; margin: 10px 0; border: 2px solid #cc9900;">
+    <strong>💡 DIAGNÓSTICO:</strong><br>
+    {%- if product.collections.size == 0 -%}
+      ❌ <strong>PROBLEMA:</strong> Produto não está em nenhuma coleção!<br>
+      <strong>SOLUÇÃO:</strong> Adicione o produto a uma coleção.
+    {%- elsif product.metafields.custom.ignore_collection_colors == true -%}
+      ⚠️ <strong>AVISO:</strong> Produto configurado para ignorar cores da coleção.<br>
+      <strong>SOLUÇÃO:</strong> Desmarque o metacampo "ignore_collection_colors".
+    {%- else -%}
+      {%- assign has_collection_colors = false -%}
+      {%- for col in product.collections -%}
+        {%- if col.metafields.custom.color_mapping != blank or col.metafields.custom.color_mapping.value != blank -%}
+          {%- assign has_collection_colors = true -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+      
+      {%- if has_collection_colors -%}
+        ✅ <strong>OK:</strong> Produto tem coleções com cores configuradas!<br>
+        {%- if product.metafields.custom.color_mapping != blank -%}
+          ⚠️ <strong>NOTA:</strong> Produto também tem cores próprias (prioridade maior).
+        {%- endif -%}
+      {%- else -%}
+        ❌ <strong>PROBLEMA:</strong> Nenhuma coleção tem metacampo color_mapping!<br>
+        <strong>SOLUÇÃO:</strong> Configure o metacampo nas coleções.
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+
+  <div style="background: #ffcccc; padding: 10px; margin: 10px 0;">
+    <strong>⚠️ IMPORTANTE:</strong> Remova este snippet após o debug!
+  </div>
+</div>

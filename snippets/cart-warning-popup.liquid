@@ -1,0 +1,279 @@
+{% comment %}
+  Popup de aviso do carrinho
+  Configurável através das configurações do tema
+{% endcomment %}
+
+{% if settings.cart_warning_enable %}
+<div id="cart-warning-popup" class="cart-warning-popup" style="display: none;">
+  <div class="cart-warning-overlay"></div>
+  <div class="cart-warning-content">
+    <div class="cart-warning-header">
+      <h3 class="cart-warning-title">{{ settings.cart_warning_title | default: 'Atenção!' }}</h3>
+      <button class="cart-warning-close" aria-label="Fechar aviso">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="cart-warning-body">
+      <div class="cart-warning-icon cart-warning-icon--{{ settings.cart_warning_type | default: 'info' }}">
+        {% case settings.cart_warning_type %}
+          {% when 'warning' %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'error' %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 8V12M12 16H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'success' %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% else %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M13 16H12V12H11M12 8H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        {% endcase %}
+      </div>
+      <p class="cart-warning-message">{{ settings.cart_warning_message | default: 'Verifique os itens do seu carrinho antes de finalizar a compra.' }}</p>
+    </div>
+    <div class="cart-warning-footer">
+      <button class="cart-warning-btn cart-warning-btn--primary" onclick="closeCartWarning()">
+        Entendi
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+.cart-warning-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.cart-warning-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.cart-warning-content {
+  position: relative;
+  background: {{ settings.cart_warning_bg_color | default: '#ffffff' }};
+  color: {{ settings.cart_warning_text_color | default: '#333333' }};
+  border-radius: {{ settings.border_radius_theme | default: 12 }}px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 400px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+.cart-warning-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 0;
+}
+
+.cart-warning-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.cart-warning-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.cart-warning-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #374151;
+}
+
+.cart-warning-body {
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cart-warning-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+}
+
+.cart-warning-icon--info {
+  color: #3b82f6;
+}
+
+.cart-warning-icon--warning {
+  color: #f59e0b;
+}
+
+.cart-warning-icon--success {
+  color: #10b981;
+}
+
+.cart-warning-icon--error {
+  color: #ef4444;
+}
+
+.cart-warning-message {
+  margin: 0;
+  line-height: 1.5;
+  color: inherit;
+}
+
+.cart-warning-footer {
+  padding: 0 20px 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cart-warning-btn {
+  background: {{ settings.primary_button_background | default: '#00badb' }};
+  color: {{ settings.primary_button_text_color | default: '#ffffff' }};
+  border: none;
+  padding: 10px 20px;
+  border-radius: {{ settings.border_radius_btn | default: 12 }}px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cart-warning-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-warning-content {
+    margin: 20px;
+    width: calc(100% - 40px);
+  }
+  
+  .cart-warning-header,
+  .cart-warning-body,
+  .cart-warning-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+</style>
+
+<script>
+let cartWarningShown = false;
+
+function showCartWarning() {
+  // Verifica se deve mostrar apenas uma vez por sessão
+  if ({{ settings.cart_warning_show_once | json }} && sessionStorage.getItem('cartWarningShown')) {
+    return;
+  }
+  
+  const popup = document.getElementById('cart-warning-popup');
+  if (popup && !cartWarningShown) {
+    const delay = {{ settings.cart_warning_delay | default: 1 }} * 1000;
+    
+    setTimeout(() => {
+      popup.style.display = 'flex';
+      cartWarningShown = true;
+      
+      // Marca como mostrado na sessão
+      if ({{ settings.cart_warning_show_once | json }}) {
+        sessionStorage.setItem('cartWarningShown', 'true');
+      }
+      
+      // Adiciona event listener para fechar com ESC
+      document.addEventListener('keydown', handleEscapeKey);
+      
+      // Previne scroll do body
+      document.body.style.overflow = 'hidden';
+    }, delay);
+  }
+}
+
+function closeCartWarning() {
+  const popup = document.getElementById('cart-warning-popup');
+  if (popup) {
+    popup.style.display = 'none';
+    document.removeEventListener('keydown', handleEscapeKey);
+    document.body.style.overflow = '';
+    
+    // Se há um redirecionamento pendente, executa
+    if (window.cartWarningPendingRedirect) {
+      window.location.href = window.cartWarningPendingRedirect;
+      window.cartWarningPendingRedirect = null;
+    }
+  }
+}
+
+function handleEscapeKey(event) {
+  if (event.key === 'Escape') {
+    closeCartWarning();
+  }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  // Fechar ao clicar no overlay
+  const overlay = document.querySelector('.cart-warning-overlay');
+  if (overlay) {
+    overlay.addEventListener('click', closeCartWarning);
+  }
+  
+  // Fechar ao clicar no botão X
+  const closeBtn = document.querySelector('.cart-warning-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeCartWarning);
+  }
+});
+
+// Exportar função para uso global
+window.showCartWarning = showCartWarning;
+window.closeCartWarning = closeCartWarning;
+</script>
+{% endif %}

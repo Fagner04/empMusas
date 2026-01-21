@@ -1,0 +1,101 @@
+{%- comment -%}
+  DEBUG: Snippet para verificar metacampos de cor
+  Adicione este snippet na página do produto para ver os valores
+  {% render 'debug-color-metafields' %}
+{%- endcomment -%}
+
+<div style="background: #f0f0f0; border: 2px solid #333; padding: 20px; margin: 20px 0; font-family: monospace; font-size: 12px;">
+  <h3 style="margin-top: 0; color: #333;">🔍 DEBUG - Metacampos de Cor</h3>
+  
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 3px solid #4CAF50;">
+    <strong>📦 Produto:</strong> {{ product.title }}<br>
+    <strong>ID:</strong> {{ product.id }}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 3px solid #2196F3;">
+    <strong>🎨 Metacampo de Mapeamento do Produto:</strong><br>
+    <code>product.metafields.custom.color_mapping</code><br>
+    {% if product.metafields.custom.color_mapping != blank %}
+      <span style="color: green;">✓ Existe</span><br>
+      <strong>Valor:</strong> {{ product.metafields.custom.color_mapping }}<br>
+      <strong>Tipo:</strong> {{ product.metafields.custom.color_mapping.type }}
+    {% else %}
+      <span style="color: red;">✗ Vazio ou não existe</span>
+    {% endif %}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 3px solid #FF9800;">
+    <strong>🔧 Opções do Produto:</strong><br>
+    {% for option in product.options_with_values %}
+      <div style="margin: 5px 0; padding: 5px; background: #f9f9f9;">
+        <strong>Opção {{ forloop.index }}:</strong> {{ option.name }}<br>
+        <strong>Valores:</strong> {{ option.values | join: ', ' }}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 3px solid #9C27B0;">
+    <strong>🎯 Variantes e Metacampos:</strong><br>
+    {% for variant in product.variants limit: 5 %}
+      <div style="margin: 10px 0; padding: 10px; background: #f9f9f9; border: 1px solid #ddd;">
+        <strong>Variante:</strong> {{ variant.title }}<br>
+        <strong>ID:</strong> {{ variant.id }}<br>
+        
+        <div style="margin-top: 5px;">
+          <strong>Metacampo custom.color:</strong>
+          {% if variant.metafields.custom.color != blank %}
+            <span style="color: green;">✓ {{ variant.metafields.custom.color }}</span>
+          {% else %}
+            <span style="color: red;">✗ Vazio</span>
+          {% endif %}
+        </div>
+        
+        <div style="margin-top: 5px;">
+          <strong>Metacampo color.value:</strong>
+          {% if variant.metafields.color.value != blank %}
+            <span style="color: green;">✓ {{ variant.metafields.color.value }}</span>
+          {% else %}
+            <span style="color: red;">✗ Vazio</span>
+          {% endif %}
+        </div>
+        
+        <div style="margin-top: 5px;">
+          <strong>Tem imagem:</strong>
+          {% if variant.image %}
+            <span style="color: green;">✓ Sim</span>
+          {% else %}
+            <span style="color: red;">✗ Não</span>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+    {% if product.variants.size > 5 %}
+      <em>... e mais {{ product.variants.size | minus: 5 }} variantes</em>
+    {% endif %}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 3px solid #F44336;">
+    <strong>🧪 Teste de Mapeamento:</strong><br>
+    {% if product.metafields.custom.color_mapping != blank %}
+      {% assign color_mappings = product.metafields.custom.color_mapping | split: '|' %}
+      <strong>Total de mapeamentos:</strong> {{ color_mappings.size }}<br>
+      {% for mapping in color_mappings %}
+        {% assign mapping_parts = mapping | split: ':' %}
+        <div style="margin: 5px 0; padding: 5px; background: #f9f9f9;">
+          <strong>Nome:</strong> "{{ mapping_parts[0] }}"<br>
+          <strong>Cor:</strong> <span style="background: {{ mapping_parts[1] }}; padding: 2px 10px; color: white;">{{ mapping_parts[1] }}</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <span style="color: red;">Nenhum mapeamento configurado</span>
+    {% endif %}
+  </div>
+
+  <div style="background: #ffffcc; padding: 10px; margin: 10px 0; border-left: 3px solid #FFC107;">
+    <strong>💡 Instruções:</strong><br>
+    1. Se os metacampos aparecem vazios, configure-os no Shopify Admin<br>
+    2. Para produto: Admin → Produtos → Editar Produto → Metacampos<br>
+    3. Para variante: Admin → Produtos → Editar Produto → Variante → Metacampos<br>
+    4. Remova este snippet após o debug
+  </div>
+</div>

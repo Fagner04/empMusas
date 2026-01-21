@@ -1,0 +1,60 @@
+{%- comment -%}
+  Helper para obter a cor de uma amostra com suporte a metacampos
+  
+  Parâmetros:
+  - variant: A variante do produto
+  - value: O valor da opção de cor
+  - product: O produto (para mapeamento de categoria)
+  
+  Retorna a cor no formato adequado para uso em CSS
+{%- endcomment -%}
+
+{%- liquid
+  assign color_output = blank
+  assign color_swatch_name = value | handle | append: '.png'
+  assign color_swatch_image = images[color_swatch_name]
+  
+  comment
+    Ordem de prioridade:
+    1. Imagem da variante
+    2. Imagem de amostra personalizada (PNG)
+    3. Metacampo de cor da variante
+    4. Metacampo de mapeamento de cor do produto
+    5. Cor automática baseada no nome
+  endcomment
+  
+  if variant.image != blank
+    assign color_output = variant.image | img_url: '64x64'
+    assign color_type = 'image'
+  elsif color_swatch_image != blank
+    assign color_output = color_swatch_image | img_url: '64x64'
+    assign color_type = 'image'
+  elsif variant.metafields.custom.color != blank
+    assign color_output = variant.metafields.custom.color
+    assign color_type = 'color'
+  elsif variant.metafields.color.value != blank
+    assign color_output = variant.metafields.color.value
+    assign color_type = 'color'
+  elsif product.metafields.custom.color_mapping != blank
+    assign color_mappings = product.metafields.custom.color_mapping | split: '|'
+    for mapping in color_mappings
+      assign mapping_parts = mapping | split: ':'
+      if mapping_parts[0] == value
+        assign color_output = mapping_parts[1]
+        assign color_type = 'color'
+        break
+      endif
+    endfor
+  endif
+  
+  if color_output == blank
+    assign color_output = value | replace: ' ', '' | downcase
+    assign color_type = 'color'
+  endif
+-%}
+
+{%- if color_type == 'image' -%}
+  data-bg="{{ color_output }}"
+{%- else -%}
+  style="background-color: {{ color_output }}"
+{%- endif -%}

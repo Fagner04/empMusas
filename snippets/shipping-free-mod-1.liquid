@@ -1,0 +1,88 @@
+          
+   <div class="fretefundo shipping-p1 shipping-p2">
+ 
+        <!--CORREIOS-->
+   
+        <img style="margin: -10px 5px -10px -8px" src="//cdn.shopify.com/s/files/1/0611/1471/2252/files/correios-logo_1.svg?v=1648167047" alt="Correios" width="65px" height="65px">
+        <p class="ttl-frete">{{ section.settings.titulofrete }}
+        <span class="ip-frete" id="custom-address">Carregando informações...</span></p>
+        <p class="txt-frete">PAC OU SEDEX </p>
+
+        <!--CORREIOS-->
+
+{%- if section.settings.selector_mode_background_shipping == 'mod_1' -%}
+<style>
+.shipping-p1 {
+    border: none;
+    background: #f4f4f4;
+}
+</style>
+{%- endif -%}
+
+{%- if section.settings.selector_mode_background_shipping == 'mod_2' -%}
+<style>
+.shipping-p2 {
+  border: 2px solid {{ section.settings.cordaborda }};
+  background: transparent;
+}
+</style>
+{%- endif -%}
+     
+<!-- ========================= -->
+     
+<style>
+
+/*
+SHIPPING CSS
+*/
+      
+@media (max-width: 640px) {
+  .fretefundo > img {
+      height: 52px!important;
+      width: 52px!important;
+  }
+  .fretefundo > p > span {
+      font-size: 10px;
+  }
+  .txt-frete {
+      font-size: 10px;
+      color: {{ section.settings.cordaborda }};
+      font-weight: bold;
+      padding: 0;
+      margin: 0;
+      margin-right: -5px!important;
+  }
+}
+
+.fretefundo {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+}
+
+.ttl-frete {
+      flex-grow: 1;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 0;
+      color: var(--text-color);
+}
+
+@media (min-width: 641px){
+.txt-frete {
+      font-size: 12px;
+      color: {{ section.settings.cordaborda }};
+      font-weight: bold;
+      padding: 0;
+      margin: 0;
+}}
+
+.ip-frete {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: {{ section.settings.cordaborda }};
+}
+</style>
+</div>

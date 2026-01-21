@@ -1,0 +1,144 @@
+{%- comment -%}
+  DEBUG: Metacampos do Produto
+  Adicione temporariamente para ver o que está acontecendo
+{%- endcomment -%}
+
+<div style="background: #fff3cd; border: 3px solid #ff6b00; padding: 20px; margin: 20px 0; font-family: monospace; font-size: 12px;">
+  <h3 style="color: #ff6b00; margin-top: 0;">🔍 DEBUG - Metacampos do Produto</h3>
+  
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #0066cc;">
+    <strong>📦 PRODUTO:</strong> {{ product.title }}<br>
+    <strong>ID:</strong> {{ product.id }}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #cc6600;">
+    <strong>🎨 METACAMPO color_mapping:</strong><br>
+    
+    <div style="margin: 5px 0; padding: 5px; background: #f9f9f9;">
+      <strong>product.metafields.custom.color_mapping.value:</strong><br>
+      {%- if product.metafields.custom.color_mapping.value != blank -%}
+        ✅ <code style="background: #ccffcc; padding: 2px 5px;">{{ product.metafields.custom.color_mapping.value }}</code>
+      {%- else -%}
+        ❌ Vazio
+      {%- endif -%}
+    </div>
+    
+    <div style="margin: 5px 0; padding: 5px; background: #f9f9f9;">
+      <strong>product.metafields.custom.color_mapping:</strong><br>
+      {%- if product.metafields.custom.color_mapping != blank -%}
+        ✅ <code style="background: #ccffcc; padding: 2px 5px;">{{ product.metafields.custom.color_mapping }}</code>
+      {%- else -%}
+        ❌ Vazio
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #9900cc;">
+    <strong>🎨 OPÇÕES DE COR DO PRODUTO:</strong><br>
+    {%- for option in product.options_with_values -%}
+      {%- assign downcase_option = option.name | downcase -%}
+      {%- if downcase_option contains 'cor' or downcase_option contains 'color' -%}
+        <strong>Opção: {{ option.name }}</strong><br>
+        <strong>Valores:</strong><br>
+        {%- for value in option.values -%}
+          <div style="margin: 5px 0; padding: 5px; background: #f0f0f0;">
+            <strong>• {{ value }}</strong><br>
+            
+            {%- comment -%}Testar busca no metacampo{%- endcomment -%}
+            {%- assign test_color = blank -%}
+            {%- if product.metafields.custom.color_mapping.value != blank -%}
+              {%- assign mappings = product.metafields.custom.color_mapping.value | split: '|' -%}
+              {%- for mapping in mappings -%}
+                {%- assign parts = mapping | split: ':' -%}
+                {%- assign color_name = parts[0] | strip -%}
+                {%- if color_name == value -%}
+                  {%- assign test_color = parts[1] | strip -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- elsif product.metafields.custom.color_mapping != blank -%}
+              {%- assign mappings = product.metafields.custom.color_mapping | split: '|' -%}
+              {%- for mapping in mappings -%}
+                {%- assign parts = mapping | split: ':' -%}
+                {%- assign color_name = parts[0] | strip -%}
+                {%- if color_name == value -%}
+                  {%- assign test_color = parts[1] | strip -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+            
+            {%- if test_color != blank -%}
+              ✅ Encontrado: <span style="background: {{ test_color }}; padding: 2px 10px; border: 1px solid #000;">{{ test_color }}</span>
+            {%- else -%}
+              ❌ NÃO encontrado no metacampo
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  <div style="background: white; padding: 10px; margin: 10px 0; border-left: 4px solid #cc0000;">
+    <strong>🔍 TODOS OS METACAMPOS DO PRODUTO:</strong><br>
+    <div style="margin: 5px 0; padding: 5px; background: #f9f9f9; font-size: 10px; max-height: 200px; overflow: auto;">
+      {{ product.metafields | json }}
+    </div>
+  </div>
+
+  <div style="background: #ffffcc; padding: 10px; margin: 10px 0; border: 2px solid #cc9900;">
+    <strong>💡 DIAGNÓSTICO:</strong><br>
+    {%- if product.metafields.custom.color_mapping.value != blank or product.metafields.custom.color_mapping != blank -%}
+      ✅ <strong>Metacampo existe!</strong><br>
+      {%- assign has_match = false -%}
+      {%- for option in product.options_with_values -%}
+        {%- assign downcase_option = option.name | downcase -%}
+        {%- if downcase_option contains 'cor' or downcase_option contains 'color' -%}
+          {%- for value in option.values -%}
+            {%- assign test_color = blank -%}
+            {%- if product.metafields.custom.color_mapping.value != blank -%}
+              {%- assign mappings = product.metafields.custom.color_mapping.value | split: '|' -%}
+              {%- for mapping in mappings -%}
+                {%- assign parts = mapping | split: ':' -%}
+                {%- assign color_name = parts[0] | strip -%}
+                {%- if color_name == value -%}
+                  {%- assign has_match = true -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- elsif product.metafields.custom.color_mapping != blank -%}
+              {%- assign mappings = product.metafields.custom.color_mapping | split: '|' -%}
+              {%- for mapping in mappings -%}
+                {%- assign parts = mapping | split: ':' -%}
+                {%- assign color_name = parts[0] | strip -%}
+                {%- if color_name == value -%}
+                  {%- assign has_match = true -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+      
+      {%- if has_match -%}
+        ✅ <strong>Nomes correspondem!</strong> Cores devem funcionar.<br>
+        <strong>Se não aparecem:</strong> Problema no CSS ou prioridade.
+      {%- else -%}
+        ❌ <strong>PROBLEMA:</strong> Nomes não correspondem!<br>
+        <strong>SOLUÇÃO:</strong> Nomes no metacampo devem ser EXATAMENTE iguais às opções.
+      {%- endif -%}
+    {%- else -%}
+      ❌ <strong>PROBLEMA:</strong> Metacampo não existe ou está vazio!<br>
+      <strong>SOLUÇÃO:</strong><br>
+      1. Criar definição em Configurações → Metacampos → Produtos<br>
+      2. Namespace: custom, Key: color_mapping<br>
+      3. Adicionar valores no produto
+    {%- endif -%}
+  </div>
+
+  <div style="background: #ffcccc; padding: 10px; margin: 10px 0;">
+    <strong>⚠️ IMPORTANTE:</strong> Remova este snippet após o debug!<br>
+    Linha para remover: <code>{% raw %}{% render 'debug-product-metafields' %}{% endraw %}</code>
+  </div>
+</div>

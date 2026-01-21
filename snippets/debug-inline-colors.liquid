@@ -1,0 +1,76 @@
+{%- comment -%}
+  DEBUG INLINE - Adicione este snippet logo ANTES das amostras de cor
+  para ver os valores sendo processados
+{%- endcomment -%}
+
+{%- for option in product.options_with_values -%}
+  {%- assign downcased_option = option.name | downcase -%}
+  {%- assign color_label = 'color,colour,couleur,cor,colore,farbe,색,色,カラー,färg,farve' | split: ',' -%}
+  
+  {%- if color_label contains downcased_option -%}
+    <div style="background: #fff3cd; border: 2px solid #856404; padding: 15px; margin: 10px 0; font-family: monospace; font-size: 11px;">
+      <strong style="color: #856404;">🔍 DEBUG - Valores de Cor</strong><br><br>
+      
+      <strong>Metacampo do Produto:</strong><br>
+      custom.color_mapping: {{ product.metafields.custom.color_mapping }}<br>
+      custom.color_mapping.value: {{ product.metafields.custom.color_mapping.value }}<br>
+      color.mapping: {{ product.metafields.color.mapping }}<br><br>
+      
+      {%- capture option_name -%}option{{ option.position }}{%- endcapture -%}
+      
+      {%- for value in option.values -%}
+        <div style="background: white; padding: 8px; margin: 5px 0; border-left: 3px solid #007bff;">
+          <strong>Opção: {{ value }}</strong><br>
+          
+          {%- comment -%}Buscar variante{%- endcomment -%}
+          {%- assign test_variant = blank -%}
+          {%- for variant in product.variants -%}
+            {%- if variant[option_name] == value -%}
+              {%- assign test_variant = variant -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+          
+          {%- if test_variant != blank -%}
+            Variante ID: {{ test_variant.id }}<br>
+            Tem imagem: {% if test_variant.image %}SIM{% else %}NÃO{% endif %}<br>
+            custom.color: {{ test_variant.metafields.custom.color }}<br>
+            custom.color.value: {{ test_variant.metafields.custom.color.value }}<br>
+            color.value: {{ test_variant.metafields.color.value }}<br>
+          {%- endif -%}
+          
+          {%- comment -%}Testar mapeamento{%- endcomment -%}
+          {%- assign test_color = blank -%}
+          {%- assign color_mapping_value = blank -%}
+          
+          {%- if product.metafields.custom.color_mapping.value != blank -%}
+            {%- assign color_mapping_value = product.metafields.custom.color_mapping.value -%}
+          {%- elsif product.metafields.custom.color_mapping != blank -%}
+            {%- assign color_mapping_value = product.metafields.custom.color_mapping -%}
+          {%- elsif product.metafields.color.mapping != blank -%}
+            {%- assign color_mapping_value = product.metafields.color.mapping -%}
+          {%- endif -%}
+          
+          {%- if color_mapping_value != blank -%}
+            {%- assign color_mappings = color_mapping_value | split: '|' -%}
+            {%- for mapping in color_mappings -%}
+              {%- assign mapping_parts = mapping | split: ':' -%}
+              {%- assign mapping_name = mapping_parts[0] | strip -%}
+              {%- if mapping_name == value -%}
+                {%- assign test_color = mapping_parts[1] | strip -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+          
+          <strong>Cor do Mapeamento:</strong> 
+          {% if test_color != blank %}
+            <span style="background: {{ test_color }}; padding: 2px 10px; color: white; border: 1px solid #000;">{{ test_color }}</span>
+          {% else %}
+            <span style="color: red;">NÃO ENCONTRADO</span>
+          {% endif %}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+{%- endfor -%}

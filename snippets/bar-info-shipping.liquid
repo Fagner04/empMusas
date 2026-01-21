@@ -1,0 +1,96 @@
+  <div class="align-localization align-localization-mobile">
+    <ion-icon class="icon-localization" name="location"></ion-icon><p id="client_local_final">Calculando frete para sua região...</p>
+  </div>
+
+<script type="text/javascript">
+
+  			$.getJSON( "https://myip.wtf/json", function(localizacao) {
+				var localTopBar = localizacao['YourFuckingLocation'];
+				var localTopBarFinal = localTopBar.replace(", Brazil", "");
+				$("#client_local_final").html("<b>Frete grátis</b> para <b>" + localTopBarFinal + "</b> e Região.");
+		    });
+   
+</script>
+
+<style>
+
+@media (max-width: 1279px){
+  .localization-bar {
+    display: none!important;
+  }
+  
+  .align-items-nav-menu {
+    justify-content: center!important;
+  }
+
+  .icon-header-bars {
+    margin-right: 12px;
+    color: var(--header-bar-text-color);
+    padding: 12px 0px;
+    height: 100%;
+    padding-bottom: 14px;
+  }
+}
+  
+  .align-items-nav-menu {
+    border-radius: 0!important;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .align-localization {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    background: transparent;
+    padding: 6px 12px;
+    border-radius: 4px;
+    width: 440px;
+  }
+
+  .align-localization>p>b {
+    color: {{ section.settings.bg_bar_info_bold }};
+  }
+
+  .icon-header-bars {
+    margin-right: 12px;
+    color: var(--header-bar-text-color);
+    padding: 12px 0px;
+    height: 100%;
+    padding-bottom: 14px;
+  }
+  
+  .icon-localization {
+    font-size: 18px;
+    margin-bottom: 2px;
+    margin-right: 4px;
+    color: {{ section.settings.bg_bar_info_bold }};
+  }
+  
+  #client_local_final {
+    font-size: 12px;
+    color: {{ section.settings.bg_bar_info_normal }};
+  }
+  
+  .bar-info-shipping {
+    padding: 4px;
+    background: #ededed
+  }
+
+/* ALTERAÇÃO NO ORIGINAL*/
+
+  .nav-bar__inner>.container {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+</style>

@@ -1,0 +1,92 @@
+ <div class="tempofrete">
+         
+   <div style="padding-bottom: 0px">
+    
+     
+      {%- if section.settings.mostrar_fretegratis -%}                  
+
+   <figure style="fill:#00b75b;float:left;margin: 5px 10px 0px 0px;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill-rule="nonzero" d="M10.587 14.805H7.01a2.452 2.452 0 1 1-4.452-1.937l-1.56-.003.002-1.2 3.6.008v.025h.048c1.167 0 2.143.815 2.39 1.907h3.52a2.455 2.455 0 0 1 1.836-1.844l2.423-6.352a.6.6 0 0 0-.56-.814H4.6v-1.2h9.658a1.8 1.8 0 0 1 1.697 2.4h1.677l1.409 4.225-2.027 4.787-1.701-.007a2.452 2.452 0 0 1-4.726.005zm4.751-1.205l.883.004 1.538-3.634-.991-2.975h-1.27l-1.835 4.809c.834.253 1.48.939 1.675 1.796zM7 5.79v1.2H1v-1.2h6zM4.6 8.222v1.2H2.2v-1.2h2.4zm.049 7.178a1.251 1.251 0 1 0 0-2.502 1.251 1.251 0 0 0 0 2.502zm8.3 0a1.251 1.251 0 1 0 0-2.502 1.251 1.251 0 0 0 0 2.502z"></path></svg></figure>
+ 
+   <div>
+    <p style="overflow: hidden; margin-top:0px; margin-bottom: 4px"><span style="color:#00b75b; font-size: 14px;">Frete Sedex
+            {%- if section.settings.mostrar_frete_full -%}
+      <svg style="fill:#00b75b;margin-left: 5px; margin-bottom: -3px" width="41" height="13" viewBox="0 0 41 13" xmlns="http://www.w3.org/2000/svg"><path fill-rule="nonzero" d="M2.628 0h5.255L5.255 4.643h4.38L2.628 13l1.751-5.571H0L2.628 0zm11.589 9.533h-1.959l1.674-7.515H19.5l-.376 1.69h-3.61l-.25 1.172h3.519l-.376 1.69h-3.53l-.66 2.963zm9.468.136c-2.334 0-3.484-1.105-3.484-2.682 0-.124.034-.383.057-.496l1.002-4.473h1.992l-.99 4.428c-.012.057-.034.18-.034.316.011.62.49 1.217 1.457 1.217 1.048 0 1.583-.654 1.776-1.533l.991-4.428h1.981l-.99 4.462c-.41 1.825-1.412 3.189-3.758 3.189zm10.118-.136h-5.01l1.673-7.515h1.959l-1.287 5.825h3.04l-.375 1.69zm6.678 0h-5.01l1.674-7.515h1.959l-1.287 5.825h3.04l-.376 1.69z"></path></svg>
+            {%- endif -%}     
+      
+      <span style="color: #0086ff; font-size: 14px;"> • Disponível
+      
+      </span> 
+ </div>
+    
+      {%- if section.settings.mostrar_correios -%}                  
+      
+     <p style="overflow: hidden; margin-top:-6px; margin-bottom: 6px; margin-left: 30px;"><span style="color:#6c6c6c; font-size: 13px;">Enviado pelos
+     
+    <img src="//cdn.shopify.com/s/files/1/0624/5040/1530/files/266.webp?v=1652577922" style="margin-left: 5px; margin-top: 2px;" width="97px" height="20px" alt="correios">
+      
+      {%- endif -%}
+
+   {%- endif -%}
+
+   
+
+   <div id="badges-product">
+
+     {%- if section.settings.mostrar_devolucao -%}
+
+     <div class="badge">
+        <svg class="badge-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="16" viewBox="0 0 14 12">
+            <path d="M2.474 7.2h7.225a2.7 2.7 0 1 0 0-5.4H7V.6h2.7a3.9 3.9 0 1 1 0 7.8H2.473l2.45 2.389-.839.859L.14 7.8l3.945-3.848.838.859L2.473 7.2z"></path>
+        </svg>
+        <div class="badge-text">
+            <p class="text-badge">
+                <span class="highlight-text" style="color: var(--product-cor-dos-titles);">Devolução.</span>
+                Até 7 dias a partir do recebimento
+            </p>
+        </div>
+    </div>
+     
+    {%- endif -%}
+     
+    {%- if section.settings.mostrar_garantia -%}
+
+    <div class="badge">
+        <svg class="badge-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="16" viewBox="0 0 14 15">
+            <path fill-rule="nonzero" d="M.399 3.89v-.6h.6c1.87 0 3.76-.783 5.68-2.374l.383-.317.383.317c1.92 1.59 3.81 2.374 5.68 2.374h.6v.6c0 5.633-2.165 9.242-6.473 10.679l-.19.063-.19-.063C2.564 13.132.4 9.523.4 3.89zm6.663-1.743c-1.8 1.4-3.62 2.179-5.455 2.32.135 4.725 1.947 7.648 5.455 8.898 3.508-1.25 5.32-4.173 5.455-8.898-1.835-.141-3.656-.92-5.455-2.32zm-.905 6.477l3.191-3.582.896.798-4.02 4.513-2.472-2.377.831-.865 1.574 1.513z"></path>
+        </svg>
+        <div class="badge-text">
+            <p class="text-badge">
+                <span class="highlight-text" style="color: var(--product-cor-dos-titles);">Compra Garantida.</span> Saia satisfeito ou devolvemos o dinheiro
+            </p>
+        </div>
+    </div>
+     
+    {%- endif -%}
+    
+    {%- if section.settings.mostrar_maisvendido -%}
+
+    <div class="badge">
+        <svg
+            class="badge-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="16"
+            viewBox="0 0 12 14"
+        >
+            <path
+                fill-rule="nonzero"
+                d="M5.305 10.354l-1.686 3.34-1.24-2.458H0l1.64-3.202a5.2 5.2 0 1 1 8.588.194l1.54 3.008H9.39l-1.241 2.458-1.673-3.315a5.266 5.266 0 0 1-1.171-.025zm-1.001-.237a5.201 5.201 0 0 1-1.975-1.234l-.693 1.353h1.357l.626 1.239.685-1.358zm3.192.064l.653 1.294.625-1.239h1.358l-.617-1.204a5.193 5.193 0 0 1-2.019 1.15zM6 9.2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
+            ></path>
+        </svg>
+        <div class="badge-text">
+            <p class="text-badge">
+                <span class="highlight-text" style="color: var(--product-cor-dos-titles);">Mais vendido</span>
+                entre os produtos da coleção.
+            </p>
+        </div>
+    </div>
+    {%- endif -%}
+
+</div>
+</div>
+</div>

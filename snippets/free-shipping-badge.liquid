@@ -1,0 +1,372 @@
+{% comment %}
+  Snippet de Frete Grátis Personalizado - VERSÃO CORRIGIDA
+  Parâmetros:
+  - product: objeto do produto (obrigatório)
+  - context: onde está sendo usado ('product', 'collection', 'cart')
+  - cart_total: valor total do carrinho (opcional, para contexto cart)
+{% endcomment %}
+
+{% if settings.free_shipping_enable %}
+  {% comment %} Inicializa variáveis {% endcomment %}
+  {% assign show_free_shipping = false %}
+  {% assign free_shipping_message = '' %}
+  {% assign free_shipping_min_value = 0 %}
+  {% assign free_shipping_type = 'default' %}
+  
+  {% comment %} Converte valores mínimos para números {% endcomment %}
+  {% assign default_min_value = settings.free_shipping_min_value | plus: 0 %}
+  {% assign collections_min_value = settings.free_shipping_collections_min_value | plus: 0 %}
+  {% assign tags_min_value = settings.free_shipping_tags_min_value | plus: 0 %}
+  
+  {% comment %} Pega o preço do produto ou carrinho {% endcomment %}
+  {% if context == 'cart' and cart_total %}
+    {% assign current_value = cart_total %}
+  {% elsif product %}
+    {% assign current_value = product.price %}
+  {% else %}
+    {% assign current_value = 0 %}
+  {% endif %}
+  
+  {% comment %} Verifica prioridade das regras {% endcomment %}
+  {% assign priority = settings.free_shipping_priority | default: 'product_first' %}
+  
+  {% comment %} Array para armazenar regras aplicáveis {% endcomment %}
+  {% assign applicable_rules = '' %}
+  
+  {% comment %} Verifica regra por produto específico {% endcomment %}
+  {% if settings.free_shipping_by_products and product %}
+    {% assign product_ids = settings.free_shipping_products_list | split: ',' %}
+    {% assign product_id_string = product.id | append: '' %}
+    {% for pid in product_ids %}
+      {% assign clean_pid = pid | strip %}
+      {% if clean_pid == product_id_string %}
+        {% assign applicable_rules = applicable_rules | append: 'product,' %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  
+  {% comment %} Verifica regra por tags {% endcomment %}
+  {% if settings.free_shipping_by_tags and product %}
+    {% assign free_shipping_tags = settings.free_shipping_tags_list | split: ',' %}
+    {% for tag in free_shipping_tags %}
+      {% assign clean_tag = tag | strip %}
+      {% if product.tags contains clean_tag %}
+        {% assign applicable_rules = applicable_rules | append: 'tag,' %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  
+  {% comment %} Verifica regra por categoria {% endcomment %}
+  {% if settings.free_shipping_by_collections and product %}
+    {% assign free_shipping_collections = settings.free_shipping_collections_list | split: ',' %}
+    {% for collection_handle in free_shipping_collections %}
+      {% assign clean_handle = collection_handle | strip %}
+      {% for collection in product.collections %}
+        {% if collection.handle == clean_handle %}
+          {% assign applicable_rules = applicable_rules | append: 'collection,' %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+      {% if applicable_rules contains 'collection,' %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  
+  {% comment %} Verifica se há regras específicas ativas {% endcomment %}
+  {% assign has_specific_rules = false %}
+  {% if settings.free_shipping_by_collections or settings.free_shipping_by_tags or settings.free_shipping_by_products %}
+    {% assign has_specific_rules = true %}
+  {% endif %}
+  
+  {% comment %} Aplica regras baseado na prioridade {% endcomment %}
+  {% if priority == 'product_first' %}
+    {% if applicable_rules contains 'product,' %}
+      {% assign show_free_shipping = true %}
+      {% assign free_shipping_message = settings.free_shipping_message_default %}
+      {% assign free_shipping_type = 'product' %}
+    {% elsif applicable_rules contains 'tag,' %}
+      {% if tags_min_value > 0 %}
+        {% if current_value >= tags_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = tags_min_value %}
+        {% endif %}
+      {% else %}
+        {% assign show_free_shipping = true %}
+      {% endif %}
+      {% assign free_shipping_message = settings.free_shipping_message_tag %}
+      {% assign free_shipping_type = 'tag' %}
+    {% elsif applicable_rules contains 'collection,' %}
+      {% if collections_min_value > 0 %}
+        {% if current_value >= collections_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = collections_min_value %}
+        {% endif %}
+      {% else %}
+        {% assign show_free_shipping = true %}
+      {% endif %}
+      {% assign free_shipping_message = settings.free_shipping_message_category %}
+      {% assign free_shipping_type = 'collection' %}
+    {% elsif has_specific_rules == false %}
+      {% comment %} Só aplica padrão se não há regras específicas ativas {% endcomment %}
+      {% if default_min_value > 0 %}
+        {% if current_value >= default_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = default_min_value %}
+          {% assign free_shipping_message = settings.free_shipping_message_default %}
+          {% assign free_shipping_type = 'default' %}
+        {% endif %}
+      {% elsif default_min_value == 0 %}
+        {% assign show_free_shipping = true %}
+        {% assign free_shipping_message = settings.free_shipping_message_default %}
+        {% assign free_shipping_type = 'default' %}
+      {% endif %}
+    {% endif %}
+  {% elsif priority == 'tag_first' %}
+    {% if applicable_rules contains 'tag,' %}
+      {% if tags_min_value > 0 %}
+        {% if current_value >= tags_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = tags_min_value %}
+        {% endif %}
+      {% else %}
+        {% assign show_free_shipping = true %}
+      {% endif %}
+      {% assign free_shipping_message = settings.free_shipping_message_tag %}
+      {% assign free_shipping_type = 'tag' %}
+    {% elsif applicable_rules contains 'product,' %}
+      {% assign show_free_shipping = true %}
+      {% assign free_shipping_message = settings.free_shipping_message_default %}
+      {% assign free_shipping_type = 'product' %}
+    {% elsif applicable_rules contains 'collection,' %}
+      {% if collections_min_value > 0 %}
+        {% if current_value >= collections_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = collections_min_value %}
+        {% endif %}
+      {% else %}
+        {% assign show_free_shipping = true %}
+      {% endif %}
+      {% assign free_shipping_message = settings.free_shipping_message_category %}
+      {% assign free_shipping_type = 'collection' %}
+    {% elsif has_specific_rules == false %}
+      {% if default_min_value > 0 %}
+        {% if current_value >= default_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = default_min_value %}
+          {% assign free_shipping_message = settings.free_shipping_message_default %}
+          {% assign free_shipping_type = 'default' %}
+        {% endif %}
+      {% elsif default_min_value == 0 %}
+        {% assign show_free_shipping = true %}
+        {% assign free_shipping_message = settings.free_shipping_message_default %}
+        {% assign free_shipping_type = 'default' %}
+      {% endif %}
+    {% endif %}
+  {% elsif priority == 'category_first' %}
+    {% if applicable_rules contains 'collection,' %}
+      {% if collections_min_value > 0 %}
+        {% if current_value >= collections_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = collections_min_value %}
+        {% endif %}
+      {% else %}
+        {% assign show_free_shipping = true %}
+      {% endif %}
+      {% assign free_shipping_message = settings.free_shipping_message_category %}
+      {% assign free_shipping_type = 'collection' %}
+    {% elsif applicable_rules contains 'tag,' %}
+      {% if tags_min_value > 0 %}
+        {% if current_value >= tags_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = tags_min_value %}
+        {% endif %}
+      {% else %}
+        {% assign show_free_shipping = true %}
+      {% endif %}
+      {% assign free_shipping_message = settings.free_shipping_message_tag %}
+      {% assign free_shipping_type = 'tag' %}
+    {% elsif applicable_rules contains 'product,' %}
+      {% assign show_free_shipping = true %}
+      {% assign free_shipping_message = settings.free_shipping_message_default %}
+      {% assign free_shipping_type = 'product' %}
+    {% elsif has_specific_rules == false %}
+      {% if default_min_value > 0 %}
+        {% if current_value >= default_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = default_min_value %}
+          {% assign free_shipping_message = settings.free_shipping_message_default %}
+          {% assign free_shipping_type = 'default' %}
+        {% endif %}
+      {% elsif default_min_value == 0 %}
+        {% assign show_free_shipping = true %}
+        {% assign free_shipping_message = settings.free_shipping_message_default %}
+        {% assign free_shipping_type = 'default' %}
+      {% endif %}
+    {% endif %}
+  {% else %}
+    {% comment %} Fallback para prioridade padrão {% endcomment %}
+    {% if applicable_rules contains 'product,' %}
+      {% assign show_free_shipping = true %}
+      {% assign free_shipping_message = settings.free_shipping_message_default %}
+      {% assign free_shipping_type = 'product' %}
+    {% elsif applicable_rules contains 'tag,' %}
+      {% if tags_min_value > 0 %}
+        {% if current_value >= tags_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = tags_min_value %}
+        {% endif %}
+      {% else %}
+        {% assign show_free_shipping = true %}
+      {% endif %}
+      {% assign free_shipping_message = settings.free_shipping_message_tag %}
+      {% assign free_shipping_type = 'tag' %}
+    {% elsif applicable_rules contains 'collection,' %}
+      {% if collections_min_value > 0 %}
+        {% if current_value >= collections_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = collections_min_value %}
+        {% endif %}
+      {% else %}
+        {% assign show_free_shipping = true %}
+      {% endif %}
+      {% assign free_shipping_message = settings.free_shipping_message_category %}
+      {% assign free_shipping_type = 'collection' %}
+    {% elsif has_specific_rules == false %}
+      {% if default_min_value > 0 %}
+        {% if current_value >= default_min_value %}
+          {% assign show_free_shipping = true %}
+          {% assign free_shipping_min_value = default_min_value %}
+          {% assign free_shipping_message = settings.free_shipping_message_default %}
+          {% assign free_shipping_type = 'default' %}
+        {% endif %}
+      {% elsif default_min_value == 0 %}
+        {% assign show_free_shipping = true %}
+        {% assign free_shipping_message = settings.free_shipping_message_default %}
+        {% assign free_shipping_type = 'default' %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  
+  {% comment %} Verifica se deve mostrar baseado no contexto {% endcomment %}
+  {% assign should_display = false %}
+  {% if context == 'product' and settings.free_shipping_show_on_product %}
+    {% assign should_display = true %}
+  {% elsif context == 'collection' and settings.free_shipping_show_on_collection %}
+    {% assign should_display = true %}
+  {% elsif context == 'cart' and settings.free_shipping_show_on_cart %}
+    {% assign should_display = true %}
+  {% endif %}
+  
+  {% comment %} Renderiza o badge se aplicável {% endcomment %}
+  {% if show_free_shipping and should_display %}
+    {% comment %} Processa a mensagem com valor mínimo {% endcomment %}
+    {% if free_shipping_min_value > 0 %}
+      {% assign formatted_value = free_shipping_min_value | money %}
+      {% assign final_message = settings.free_shipping_message_min_value | replace: '{value}', formatted_value %}
+    {% else %}
+      {% assign final_message = free_shipping_message %}
+    {% endif %}
+    
+    {% comment %} Renderiza baseado no modo de exibição {% endcomment %}
+    {% assign display_mode = settings.free_shipping_display_mode | default: 'badge' %}
+    
+    <div class="free-shipping-container free-shipping-container--{{ display_mode }} free-shipping-container--{{ free_shipping_type }}" 
+         data-free-shipping-type="{{ free_shipping_type }}"
+         data-min-value="{{ free_shipping_min_value }}"
+         data-current-value="{{ current_value }}">
+      
+      {% if display_mode == 'badge' %}
+        <span class="free-shipping-badge">
+          <span class="free-shipping-badge__text">{{ final_message }}</span>
+        </span>
+      {% elsif display_mode == 'banner' %}
+        <div class="free-shipping-banner">
+          <div class="free-shipping-banner__content">
+            <span class="free-shipping-banner__icon">🚚</span>
+            <span class="free-shipping-banner__text">{{ final_message }}</span>
+          </div>
+        </div>
+      {% else %}
+        <p class="free-shipping-text">{{ final_message }}</p>
+      {% endif %}
+    </div>
+    
+    <style>
+      .free-shipping-container {
+        margin: 8px 0;
+      }
+      
+      .free-shipping-badge {
+        display: inline-flex;
+        align-items: center;
+        background: {{ settings.free_shipping_bg_color | default: '#00c851' }};
+        color: {{ settings.free_shipping_text_color | default: '#ffffff' }};
+        padding: 4px 12px;
+        border-radius: {{ settings.border_radius_theme | default: 12 }}px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      .free-shipping-banner {
+        background: {{ settings.free_shipping_bg_color | default: '#00c851' }};
+        color: {{ settings.free_shipping_text_color | default: '#ffffff' }};
+        padding: 12px 16px;
+        border-radius: {{ settings.border_radius_theme | default: 12 }}px;
+        margin: 12px 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .free-shipping-banner__content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+      }
+      
+      .free-shipping-banner__icon {
+        font-size: 18px;
+      }
+      
+      .free-shipping-banner__text {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      
+      .free-shipping-text {
+        color: {{ settings.free_shipping_bg_color | default: '#00c851' }};
+        font-weight: 600;
+        font-size: 14px;
+        margin: 8px 0;
+      }
+      
+      /* Animação sutil */
+      .free-shipping-badge,
+      .free-shipping-banner {
+        animation: freeShippingPulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes freeShippingPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+      }
+      
+      /* Responsivo */
+      @media (max-width: 768px) {
+        .free-shipping-badge {
+          font-size: 11px;
+          padding: 3px 10px;
+        }
+        
+        .free-shipping-banner__text {
+          font-size: 13px;
+        }
+      }
+    </style>
+  {% endif %}
+{% endif %}

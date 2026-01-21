@@ -1,0 +1,174 @@
+{%- comment -%}
+  VERIFICAÇÃO: Metacampos Salvos
+  Adicione temporariamente para ver se metacampos estão sendo salvos
+{%- endcomment -%}
+
+<div style="background: #e3f2fd; border: 3px solid #1976d2; padding: 20px; margin: 20px; font-family: monospace; font-size: 13px;">
+  <h2 style="color: #1976d2; margin-top: 0;">🔍 VERIFICAÇÃO DE METACAMPOS</h2>
+  
+  <div style="background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #4caf50;">
+    <h3 style="margin-top: 0;">📦 Produto: {{ product.title }}</h3>
+    <strong>ID:</strong> {{ product.id }}
+  </div>
+
+  <div style="background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #ff9800;">
+    <h3 style="margin-top: 0;">🎨 METACAMPO: custom.color_mapping</h3>
+    
+    <div style="margin: 10px 0; padding: 10px; background: #f5f5f5;">
+      <strong>product.metafields.custom.color_mapping.value:</strong><br>
+      {%- if product.metafields.custom.color_mapping.value != blank -%}
+        <div style="background: #c8e6c9; padding: 10px; margin: 5px 0; border-radius: 4px;">
+          ✅ <strong>EXISTE!</strong><br>
+          <code style="background: white; padding: 5px; display: block; margin-top: 5px;">{{ product.metafields.custom.color_mapping.value }}</code>
+        </div>
+      {%- else -%}
+        <div style="background: #ffcdd2; padding: 10px; margin: 5px 0; border-radius: 4px;">
+          ❌ <strong>VAZIO</strong>
+        </div>
+      {%- endif -%}
+    </div>
+    
+    <div style="margin: 10px 0; padding: 10px; background: #f5f5f5;">
+      <strong>product.metafields.custom.color_mapping:</strong><br>
+      {%- if product.metafields.custom.color_mapping != blank -%}
+        <div style="background: #c8e6c9; padding: 10px; margin: 5px 0; border-radius: 4px;">
+          ✅ <strong>EXISTE!</strong><br>
+          <code style="background: white; padding: 5px; display: block; margin-top: 5px;">{{ product.metafields.custom.color_mapping }}</code>
+        </div>
+      {%- else -%}
+        <div style="background: #ffcdd2; padding: 10px; margin: 5px 0; border-radius: 4px;">
+          ❌ <strong>VAZIO</strong>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div style="background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #9c27b0;">
+    <h3 style="margin-top: 0;">🏷️ TAGS DO PRODUTO</h3>
+    
+    {%- assign has_color_tags = false -%}
+    {%- for tag in product.tags -%}
+      {%- if tag contains 'color:' -%}
+        {%- assign has_color_tags = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+    
+    {%- if has_color_tags -%}
+      <div style="background: #c8e6c9; padding: 10px; margin: 5px 0; border-radius: 4px;">
+        ✅ <strong>TEM TAGS DE COR:</strong><br>
+        {%- for tag in product.tags -%}
+          {%- if tag contains 'color:' -%}
+            <code style="background: white; padding: 3px 8px; display: inline-block; margin: 3px;">{{ tag }}</code>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div style="background: #fff9c4; padding: 10px; margin: 5px 0; border-radius: 4px;">
+        ⚠️ <strong>SEM TAGS DE COR</strong>
+      </div>
+    {%- endif -%}
+    
+    <details style="margin-top: 10px;">
+      <summary style="cursor: pointer; padding: 5px; background: #f5f5f5;">Ver todas as tags</summary>
+      <div style="padding: 10px; background: #fafafa; margin-top: 5px;">
+        {%- if product.tags.size > 0 -%}
+          {%- for tag in product.tags -%}
+            <code style="background: white; padding: 3px 8px; display: inline-block; margin: 3px;">{{ tag }}</code>
+          {%- endfor -%}
+        {%- else -%}
+          <em>Nenhuma tag</em>
+        {%- endif -%}
+      </div>
+    </details>
+  </div>
+
+  <div style="background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #f44336;">
+    <h3 style="margin-top: 0;">🎨 OPÇÕES DE COR</h3>
+    
+    {%- assign has_color_option = false -%}
+    {%- for option in product.options_with_values -%}
+      {%- assign downcase_option = option.name | downcase -%}
+      {%- if downcase_option contains 'cor' or downcase_option contains 'color' -%}
+        {%- assign has_color_option = true -%}
+        <div style="background: #e3f2fd; padding: 10px; margin: 5px 0; border-radius: 4px;">
+          <strong>Opção: {{ option.name }}</strong><br>
+          <strong>Valores:</strong><br>
+          {%- for value in option.values -%}
+            <code style="background: white; padding: 3px 8px; display: inline-block; margin: 3px;">{{ value }}</code>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+    
+    {%- unless has_color_option -%}
+      <div style="background: #ffcdd2; padding: 10px; margin: 5px 0; border-radius: 4px;">
+        ❌ <strong>PRODUTO NÃO TEM OPÇÃO DE COR!</strong>
+      </div>
+    {%- endunless -%}
+  </div>
+
+  <div style="background: #fff3e0; padding: 15px; margin: 10px 0; border: 2px solid #ff9800;">
+    <h3 style="margin-top: 0; color: #e65100;">💡 DIAGNÓSTICO</h3>
+    
+    {%- if product.metafields.custom.color_mapping.value != blank or product.metafields.custom.color_mapping != blank -%}
+      <div style="background: #c8e6c9; padding: 10px; margin: 5px 0; border-radius: 4px;">
+        ✅ <strong>METACAMPO ESTÁ SALVO!</strong><br>
+        O metacampo existe e tem valor.
+      </div>
+      
+      {%- if has_color_option -%}
+        <div style="background: #c8e6c9; padding: 10px; margin: 5px 0; border-radius: 4px;">
+          ✅ <strong>PRODUTO TEM OPÇÃO DE COR!</strong><br>
+          Tudo configurado corretamente.
+        </div>
+        
+        <div style="background: #e1f5fe; padding: 10px; margin: 10px 0; border-radius: 4px;">
+          <strong>🎯 PRÓXIMO PASSO:</strong><br>
+          Se as cores não aparecem, o problema pode ser:<br>
+          1. Nomes não correspondem exatamente<br>
+          2. Formato do metacampo está errado<br>
+          3. CSS do tema está sobrescrevendo<br>
+          4. Cache do navegador (fazer Ctrl + F5)
+        </div>
+      {%- else -%}
+        <div style="background: #ffcdd2; padding: 10px; margin: 5px 0; border-radius: 4px;">
+          ❌ <strong>PROBLEMA:</strong> Produto não tem opção de cor!<br>
+          Adicione uma opção chamada "Cor" ou "Color" no produto.
+        </div>
+      {%- endif -%}
+      
+    {%- elsif has_color_tags -%}
+      <div style="background: #c8e6c9; padding: 10px; margin: 5px 0; border-radius: 4px;">
+        ✅ <strong>TAGS DE COR ENCONTRADAS!</strong><br>
+        Produto usa tags ao invés de metacampos.
+      </div>
+      
+    {%- else -%}
+      <div style="background: #ffcdd2; padding: 10px; margin: 5px 0; border-radius: 4px;">
+        ❌ <strong>PROBLEMA: METACAMPO NÃO ESTÁ SALVO!</strong>
+      </div>
+      
+      <div style="background: #fff9c4; padding: 15px; margin: 10px 0; border-radius: 4px;">
+        <strong>🔧 SOLUÇÕES:</strong><br><br>
+        
+        <strong>Opção 1: Verificar Definição do Metacampo</strong><br>
+        1. Admin → Configurações → Metacampos → Produtos<br>
+        2. Verificar se existe "Mapeamento de Cores"<br>
+        3. Namespace deve ser: <code>custom</code><br>
+        4. Key deve ser: <code>color_mapping</code><br>
+        5. Tipo: Texto de linha única<br><br>
+        
+        <strong>Opção 2: Usar Tags (Mais Fácil)</strong><br>
+        1. Editar este produto<br>
+        2. Adicionar tags: <code>color:NomeCor:#HEX</code><br>
+        3. Exemplo: <code>color:Azul bebe:#0066ff</code><br>
+        4. SALVAR<br>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div style="background: #ffebee; padding: 10px; margin: 10px 0; border-radius: 4px;">
+    <strong>⚠️ LEMBRETE:</strong> Remova este snippet após verificar!<br>
+    Linha para remover: <code>{% raw %}{% render 'verificar-metacampos' %}{% endraw %}</code>
+  </div>
+</div>
