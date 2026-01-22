@@ -15,7 +15,7 @@
   <div class="container">
     <header class="section__header">
       <div class="section__header-stack">
-        <h2 class="section__title heading h3">{{ section.settings.title | escape }}</h2>
+        <h2 class="section__title heading h3">{{ section.settings.title | default: 'Produtos em Destaque' | escape }}</h2>
         {%- if section.settings.subtitle != blank -%}
           <p class="section__subtitle">{{ section.settings.subtitle | escape }}</p>
         {%- endif -%}
@@ -31,7 +31,9 @@
           <div class="floating-category-menu__inner">
             <button class="floating-category-menu__toggle" data-action="toggle-floating-menu">
               <span class="floating-category-menu__icon">
-                {% render 'floating-menu-icon', icon: 'hamburger' %}
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </span>
               <span class="floating-category-menu__text">Categorias</span>
             </button>
@@ -39,14 +41,16 @@
             <div class="floating-category-menu__dropdown" data-floating-dropdown>
               <div class="floating-category-menu__list">
                 {%- for block in section.blocks -%}
-                  {%- if block.type == 'category' -%}
+                  {%- if block.type == 'category' and block.settings.collection != blank -%}
                     {%- assign collection = collections[block.settings.collection] -%}
-                    <button class="floating-category-menu__item" 
-                            data-action="filter-category" 
-                            data-collection="{{ block.settings.collection }}"
-                            data-block-id="{{ block.id }}">
-                      {{ block.settings.title | default: collection.title | escape }}
-                    </button>
+                    {%- if collection.products.size > 0 -%}
+                      <button class="floating-category-menu__item" 
+                              data-action="filter-category" 
+                              data-collection="{{ block.settings.collection }}"
+                              data-block-id="{{ block.id }}">
+                        {{ block.settings.title | default: collection.title | escape }}
+                      </button>
+                    {%- endif -%}
                   {%- endif -%}
                 {%- endfor -%}
                 <button class="floating-category-menu__item floating-category-menu__item--all" 
@@ -65,31 +69,58 @@
           {%- assign all_products = '' -%}
           {%- assign product_count = 0 -%}
           
-          {%- comment -%} Coletamos produtos de todas as coleções {%- endcomment -%}
+          {%- comment -%} Coletamos produtos de todas as coleções configuradas {%- endcomment -%}
           {%- for block in section.blocks -%}
-            {%- if block.type == 'category' -%}
+            {%- if block.type == 'category' and block.settings.collection != blank -%}
               {%- assign collection = collections[block.settings.collection] -%}
-              {%- for product in collection.products limit: section.settings.products_per_category -%}
-                {%- unless all_products contains product.id -%}
-                  {%- assign all_products = all_products | append: product.id | append: ',' -%}
-                  
-                  <div class="product-carousel-floating__item" 
-                       data-product-id="{{ product.id }}" 
-                       data-collection="{{ block.settings.collection }}"
-                       data-block-id="{{ block.id }}">
-                    {%- render 'product-item', 
-                        product: product, 
-                        show_add_to_cart: section.settings.show_quick_buy,
-                        show_secondary_image: section.settings.show_secondary_image -%}
-                  </div>
-                  
-                  {%- assign product_count = product_count | plus: 1 -%}
-                {%- endunless -%}
-              {%- endfor -%}
+              {%- if collection.products.size > 0 -%}
+                {%- for product in collection.products limit: section.settings.products_per_category -%}
+                  {%- unless all_products contains product.id -%}
+                    {%- assign all_products = all_products | append: product.id | append: ',' -%}
+                    
+                    <div class="product-carousel-floating__item" 
+                         data-product-id="{{ product.id }}" 
+                         data-collection="{{ block.settings.collection }}"
+                         data-block-id="{{ block.id }}">
+                      {%- render 'product-item', 
+                          product: product, 
+                          show_add_to_cart: section.settings.show_quick_buy,
+                          show_secondary_image: section.settings.show_secondary_image -%}
+                    </div>
+                    
+                    {%- assign product_count = product_count | plus: 1 -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              {%- endif -%}
             {%- endif -%}
           {%- endfor -%}
           
-          {%- comment -%} Se não há produtos, mostra placeholders {%- endcomment -%}
+          {%- comment -%} Se não há produtos configurados, pega produtos de qualquer coleção {%- endcomment -%}
+          {%- if product_count == 0 -%}
+            {%- for collection in collections limit: 3 -%}
+              {%- if collection.products.size > 0 -%}
+                {%- for product in collection.products limit: 4 -%}
+                  {%- unless all_products contains product.id -%}
+                    {%- assign all_products = all_products | append: product.id | append: ',' -%}
+                    
+                    <div class="product-carousel-floating__item" 
+                         data-product-id="{{ product.id }}" 
+                         data-collection="{{ collection.handle }}"
+                         data-block-id="auto-{{ collection.handle }}">
+                      {%- render 'product-item', 
+                          product: product, 
+                          show_add_to_cart: section.settings.show_quick_buy,
+                          show_secondary_image: section.settings.show_secondary_image -%}
+                    </div>
+                    
+                    {%- assign product_count = product_count | plus: 1 -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+          
+          {%- comment -%} Se ainda não há produtos, mostra placeholders {%- endcomment -%}
           {%- if product_count == 0 -%}
             {%- for i in (1..8) -%}
               <div class="product-carousel-floating__item">

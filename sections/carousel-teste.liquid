@@ -1,0 +1,237 @@
+<style>
+  .carousel-teste {
+    padding: 40px 0;
+    background: #f8f9fa;
+    min-height: 300px;
+  }
+  
+  .carousel-teste__title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  .carousel-teste__menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+  }
+  
+  .carousel-teste__button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .carousel-teste__button:hover {
+    background: #0056b3;
+  }
+  
+  .carousel-teste__dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .carousel-teste__menu.is-open .carousel-teste__dropdown {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .carousel-teste__dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+  }
+  
+  .carousel-teste__dropdown button:hover {
+    background: #f8f9fa;
+  }
+  
+  .carousel-teste__products {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 0;
+  }
+  
+  .carousel-teste__product {
+    flex: 0 0 250px;
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  
+  .carousel-teste__product.is-hidden {
+    opacity: 0.3;
+  }
+</style>
+
+<section class="carousel-teste" data-section-id="{{ section.id }}">
+  <div class="container" style="position: relative;">
+    
+    <h2 class="carousel-teste__title">{{ section.settings.title | default: 'Teste do Carousel' }}</h2>
+    
+    <!-- Menu Flutuante -->
+    <div class="carousel-teste__menu" id="menu-{{ section.id }}">
+      <button class="carousel-teste__button" onclick="toggleMenu('{{ section.id }}')">
+        ☰ Categorias
+      </button>
+      <div class="carousel-teste__dropdown">
+        {% for block in section.blocks %}
+          {% if block.type == 'category' %}
+            {% assign collection = collections[block.settings.collection] %}
+            <button onclick="filterCategory('{{ block.settings.collection }}', '{{ section.id }}')">
+              {{ block.settings.title | default: collection.title }}
+            </button>
+          {% endif %}
+        {% endfor %}
+        <button onclick="showAll('{{ section.id }}')">Todos os Produtos</button>
+      </div>
+    </div>
+    
+    <!-- Produtos -->
+    <div class="carousel-teste__products" id="products-{{ section.id }}">
+      {% assign product_count = 0 %}
+      
+      {% for block in section.blocks %}
+        {% if block.type == 'category' %}
+          {% assign collection = collections[block.settings.collection] %}
+          {% for product in collection.products limit: 4 %}
+            <div class="carousel-teste__product" data-collection="{{ block.settings.collection }}">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | img_url: '200x200' }}" alt="{{ product.title }}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+              {% else %}
+                <div style="width: 100%; height: 150px; background: #eee; border-radius: 4px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center;">
+                  Sem Imagem
+                </div>
+              {% endif %}
+              <h3 style="font-size: 14px; margin: 10px 0;">{{ product.title }}</h3>
+              <p style="font-weight: bold; color: #007bff;">{{ product.price | money }}</p>
+            </div>
+            {% assign product_count = product_count | plus: 1 %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+      
+      {% if product_count == 0 %}
+        {% for i in (1..6) %}
+          <div class="carousel-teste__product">
+            <div style="width: 100%; height: 150px; background: #eee; border-radius: 4px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center;">
+              Produto {{ i }}
+            </div>
+            <h3 style="font-size: 14px; margin: 10px 0;">Produto de Exemplo {{ i }}</h3>
+            <p style="font-weight: bold; color: #007bff;">R$ {{ i }}9,99</p>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+  </div>
+</section>
+
+<script>
+  function toggleMenu(sectionId) {
+    const menu = document.getElementById('menu-' + sectionId);
+    menu.classList.toggle('is-open');
+  }
+  
+  function filterCategory(collection, sectionId) {
+    const products = document.querySelectorAll('#products-' + sectionId + ' .carousel-teste__product');
+    
+    products.forEach(product => {
+      if (product.dataset.collection === collection) {
+        product.classList.remove('is-hidden');
+      } else {
+        product.classList.add('is-hidden');
+      }
+    });
+    
+    toggleMenu(sectionId);
+  }
+  
+  function showAll(sectionId) {
+    const products = document.querySelectorAll('#products-' + sectionId + ' .carousel-teste__product');
+    
+    products.forEach(product => {
+      product.classList.remove('is-hidden');
+    });
+    
+    toggleMenu(sectionId);
+  }
+  
+  // Fechar menu ao clicar fora
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.carousel-teste__menu')) {
+      document.querySelectorAll('.carousel-teste__menu').forEach(menu => {
+        menu.classList.remove('is-open');
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Carousel Teste",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Teste do Carousel"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Categoria",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Coleção"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título personalizado"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Carousel Teste",
+      "category": "Product",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
