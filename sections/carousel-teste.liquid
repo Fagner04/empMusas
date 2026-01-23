@@ -25,106 +25,68 @@
     margin-bottom: 30px;
   }
   
-  /* Menu Flutuante Centralizado */
+  /* Menu de Categorias Horizontal */
   .carousel-teste__menu {
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 12px;
     margin-bottom: 40px;
-    position: relative;
+    flex-wrap: wrap;
+    padding: 0 20px;
   }
   
-  .carousel-teste__button {
-    background: linear-gradient(135deg, var(--primary-button-background, #007bff), var(--accent-color, #0056b3));
-    color: var(--primary-button-text-color, white);
-    border: none;
-    padding: 14px 24px;
+  .carousel-teste__category-button {
+    background: var(--secondary-background, white);
+    color: var(--text-color, #666);
+    border: 2px solid var(--border-color, #e0e0e0);
+    padding: 12px 20px;
     border-radius: 50px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  }
-  
-  .carousel-teste__button:hover {
-    background: var(--accent-color, #0056b3);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
-  }
-  
-  .carousel-teste__button svg {
-    width: 18px;
-    height: 18px;
-    transition: transform 0.3s ease;
-  }
-  
-  .carousel-teste__menu.is-open .carousel-teste__button svg {
-    transform: rotate(180deg);
-  }
-  
-  .carousel-teste__dropdown {
-    position: absolute;
-    top: calc(100% + 15px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--secondary-background, white);
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    min-width: 280px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-50%) translateY(-10px) scale(0.95);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid var(--border-color, #e0e0e0);
-    z-index: 100;
-  }
-  
-  .carousel-teste__menu.is-open .carousel-teste__dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
-  
-  .carousel-teste__dropdown-list {
-    padding: 12px 0;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-  
-  .carousel-teste__dropdown button {
-    display: block;
-    width: 100%;
-    padding: 12px 20px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--text-color, #333);
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    white-space: nowrap;
     position: relative;
+    overflow: hidden;
   }
   
-  .carousel-teste__dropdown button:hover {
-    background: var(--border-color, #f8f9fa);
+  .carousel-teste__category-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  .carousel-teste__category-button:hover::before {
+    left: 100%;
+  }
+  
+  .carousel-teste__category-button:hover {
+    border-color: var(--accent-color, #007bff);
     color: var(--accent-color, #007bff);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
   }
   
-  .carousel-teste__dropdown button.is-active {
-    background: var(--accent-color, #007bff);
-    color: var(--secondary-background, white);
-    font-weight: 600;
+  .carousel-teste__category-button.is-active {
+    background: linear-gradient(135deg, var(--primary-button-background, #007bff), var(--accent-color, #0056b3));
+    color: var(--primary-button-text-color, white);
+    border-color: var(--accent-color, #007bff);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    transform: translateY(-1px);
   }
   
-  .carousel-teste__dropdown button:last-child {
-    border-top: 1px solid var(--border-color, #e0e0e0);
-    margin-top: 8px;
-    padding-top: 16px;
-    font-weight: 600;
+  .carousel-teste__category-button.is-active::before {
+    display: none;
+  }
+  
+  .carousel-teste__category-button:active {
+    transform: translateY(0);
   }
   
   /* Container dos Produtos */
@@ -286,15 +248,25 @@
       font-size: 24px;
     }
     
-    .carousel-teste__button {
-      padding: 12px 20px;
-      font-size: 14px;
+    .carousel-teste__menu {
+      gap: 8px;
+      padding: 0 10px;
+      justify-content: flex-start;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 10px;
     }
     
-    .carousel-teste__dropdown {
-      min-width: 250px;
-      left: 50%;
-      right: auto;
+    .carousel-teste__menu::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .carousel-teste__category-button {
+      padding: 10px 16px;
+      font-size: 13px;
+      flex-shrink: 0;
     }
     
     .carousel-teste__product {
@@ -306,7 +278,27 @@
     }
   }
   
+  @media screen and (min-width: 641px) and (max-width: 1023px) {
+    .carousel-teste__menu {
+      gap: 10px;
+    }
+    
+    .carousel-teste__category-button {
+      padding: 11px 18px;
+      font-size: 13px;
+    }
+  }
+  
   @media screen and (min-width: 1024px) {
+    .carousel-teste__menu {
+      gap: 16px;
+    }
+    
+    .carousel-teste__category-button {
+      padding: 14px 24px;
+      font-size: 15px;
+    }
+    
     .carousel-teste__product {
       flex: 0 0 320px;
     }
@@ -328,29 +320,24 @@
       {%- endif -%}
     </div>
     
-    <!-- Menu Flutuante Centralizado -->
+    <!-- Menu de Categorias Horizontal -->
     <div class="carousel-teste__menu" id="menu-{{ section.id }}">
-      <button class="carousel-teste__button" onclick="toggleMenu('{{ section.id }}')">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Escolher Categoria
+      <!-- Botão "Todos os Produtos" sempre primeiro -->
+      <button class="carousel-teste__category-button is-active" onclick="showAll('{{ section.id }}', this)">
+        Todos os Produtos
       </button>
-      <div class="carousel-teste__dropdown">
-        <div class="carousel-teste__dropdown-list">
-          {% for block in section.blocks %}
-            {% if block.type == 'category' and block.settings.collection != blank %}
-              {% assign collection = collections[block.settings.collection] %}
-              {% if collection.products.size > 0 %}
-                <button onclick="filterCategory('{{ block.settings.collection }}', '{{ section.id }}', this)">
-                  {{ block.settings.title | default: collection.title }}
-                </button>
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          <button onclick="showAll('{{ section.id }}', this)" class="is-active">Todos os Produtos</button>
-        </div>
-      </div>
+      
+      <!-- Botões das categorias -->
+      {% for block in section.blocks %}
+        {% if block.type == 'category' and block.settings.collection != blank %}
+          {% assign collection = collections[block.settings.collection] %}
+          {% if collection.products.size > 0 %}
+            <button class="carousel-teste__category-button" onclick="filterCategory('{{ block.settings.collection }}', '{{ section.id }}', this)">
+              {{ block.settings.title | default: collection.title }}
+            </button>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
     </div>
     
     <!-- Container dos Produtos -->
@@ -467,14 +454,9 @@
 </section>
 
 <script>
-  function toggleMenu(sectionId) {
-    const menu = document.getElementById('menu-' + sectionId);
-    menu.classList.toggle('is-open');
-  }
-  
   function filterCategory(collection, sectionId, button) {
     const products = document.querySelectorAll('#products-' + sectionId + ' .carousel-teste__product');
-    const buttons = document.querySelectorAll('#menu-' + sectionId + ' button');
+    const buttons = document.querySelectorAll('#menu-' + sectionId + ' .carousel-teste__category-button');
     
     // Remover classe ativa de todos os botões
     buttons.forEach(btn => btn.classList.remove('is-active'));
@@ -495,15 +477,12 @@
       }, index * 50);
     });
     
-    // Fechar menu
-    toggleMenu(sectionId);
-    
     console.log('Filtrado por:', collection, '- Produtos visíveis:', visibleCount);
   }
   
   function showAll(sectionId, button) {
     const products = document.querySelectorAll('#products-' + sectionId + ' .carousel-teste__product');
-    const buttons = document.querySelectorAll('#menu-' + sectionId + ' button');
+    const buttons = document.querySelectorAll('#menu-' + sectionId + ' .carousel-teste__category-button');
     
     // Remover classe ativa de todos os botões
     buttons.forEach(btn => btn.classList.remove('is-active'));
@@ -518,29 +497,53 @@
       }, index * 30);
     });
     
-    // Fechar menu
-    toggleMenu(sectionId);
-    
     console.log('Mostrando todos os produtos:', products.length);
   }
   
-  // Fechar menu ao clicar fora
+  // Adicionar efeito de ripple nos botões
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('.carousel-teste__menu')) {
-      document.querySelectorAll('.carousel-teste__menu').forEach(menu => {
-        menu.classList.remove('is-open');
-      });
+    if (e.target.classList.contains('carousel-teste__category-button')) {
+      const button = e.target;
+      const ripple = document.createElement('span');
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      
+      ripple.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+      `;
+      
+      button.style.position = 'relative';
+      button.style.overflow = 'hidden';
+      button.appendChild(ripple);
+      
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
     }
   });
   
-  // Fechar menu com ESC
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.carousel-teste__menu').forEach(menu => {
-        menu.classList.remove('is-open');
-      });
+  // Adicionar CSS para animação de ripple
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
     }
-  });
+  `;
+  document.head.appendChild(style);
 </script>
 
 {% schema %}
