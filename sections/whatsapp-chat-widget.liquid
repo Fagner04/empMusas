@@ -1,0 +1,456 @@
+{%- capture section_settings -%}
+{
+  "businessName": {{ section.settings.business_name | json }},
+  "welcomeMessage": {{ section.settings.welcome_message | json }},
+  "whatsappNumber": {{ section.settings.whatsapp_number | json }},
+  "isOnline": {{ section.settings.is_online | json }},
+  "showSchedule": {{ section.settings.show_schedule | json }},
+  "autoOpen": {{ section.settings.auto_open | json }},
+  "autoOpenDelay": {{ section.settings.auto_open_delay | times: 1000 | json }}
+}
+{%- endcapture -%}
+
+{{ 'whatsapp-chat-widget.css' | asset_url | stylesheet_tag }}
+
+<!-- Botão Flutuante do WhatsApp -->
+<div class="whatsapp-widget" data-section-id="{{ section.id }}" data-section-settings='{{ section_settings }}'>
+  <div class="whatsapp-widget__trigger" id="whatsapp-trigger-{{ section.id }}">
+    <div class="whatsapp-widget__icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.63" fill="currentColor"/>
+      </svg>
+    </div>
+    
+    {%- if section.settings.show_notification -%}
+      <div class="whatsapp-widget__notification">
+        {{ section.settings.notification_count | default: 1 }}
+      </div>
+    {%- endif -%}
+    
+    {%- if section.settings.show_tooltip -%}
+      <div class="whatsapp-widget__tooltip">
+        {{ section.settings.tooltip_text | default: 'Precisa de ajuda?' }}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <!-- Chat Widget -->
+  <div class="whatsapp-widget__chat" id="whatsapp-chat-{{ section.id }}">
+    <!-- Header -->
+    <div class="whatsapp-widget__header">
+      <div class="whatsapp-widget__header-info">
+        <div class="whatsapp-widget__avatar">
+          {%- if section.settings.avatar != blank -%}
+            <img src="{{ section.settings.avatar | img_url: '60x60' }}" alt="{{ section.settings.business_name }}">
+          {%- else -%}
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.63" fill="currentColor"/>
+            </svg>
+          {%- endif -%}
+        </div>
+        
+        <div class="whatsapp-widget__header-text">
+          <h3 class="whatsapp-widget__business-name">{{ section.settings.business_name | default: 'Atendimento' }}</h3>
+          <div class="whatsapp-widget__status">
+            <span class="whatsapp-widget__status-dot {% if section.settings.is_online %}online{% else %}offline{% endif %}"></span>
+            {% if section.settings.is_online %}Online{% else %}Offline{% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <button class="whatsapp-widget__close" id="whatsapp-close-{{ section.id }}">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Messages Area -->
+    <div class="whatsapp-widget__messages">
+      <!-- Welcome Message -->
+      <div class="whatsapp-widget__message whatsapp-widget__message--received">
+        <div class="whatsapp-widget__message-content">
+          <div class="whatsapp-widget__message-text">
+            {{ section.settings.welcome_message | default: '👋 Olá! Bem-vindo à nossa loja! Como posso ajudar você hoje?' }}
+          </div>
+          <div class="whatsapp-widget__message-time">
+            <span id="current-time-{{ section.id }}"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    {%- if section.settings.show_quick_actions -%}
+      <div class="whatsapp-widget__quick-actions">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'quick_action' -%}
+            <button class="whatsapp-widget__quick-action" data-message="{{ block.settings.message }}">
+              <div class="whatsapp-widget__quick-action-icon">
+                {%- case block.settings.icon -%}
+                  {%- when 'package' -%}
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <polyline points="3.27,6.96 12,12.01 20.73,6.96" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  {%- when 'calculator' -%}
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="8" y1="6" x2="16" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="8" y1="10" x2="8" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="12" y1="10" x2="12" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="16" y1="10" x2="16" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="8" y1="14" x2="8" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="12" y1="14" x2="12" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="16" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="8" y1="18" x2="8" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="12" y1="18" x2="16" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  {%- when 'help' -%}
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  {%- else -%}
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                {%- endcase -%}
+              </div>
+              <div class="whatsapp-widget__quick-action-text">
+                <div class="whatsapp-widget__quick-action-title">{{ block.settings.title }}</div>
+                <div class="whatsapp-widget__quick-action-subtitle">{{ block.settings.subtitle }}</div>
+              </div>
+            </button>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <!-- Message Input -->
+    <div class="whatsapp-widget__input-area">
+      <div class="whatsapp-widget__input-wrapper">
+        <textarea 
+          class="whatsapp-widget__input" 
+          placeholder="{{ section.settings.input_placeholder | default: 'Digite sua mensagem...' }}"
+          rows="1"
+          id="whatsapp-input-{{ section.id }}"></textarea>
+        <button class="whatsapp-widget__send" id="whatsapp-send-{{ section.id }}">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polygon points="22,2 15,22 11,13 2,9 22,2" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- WhatsApp Button -->
+    <div class="whatsapp-widget__whatsapp-btn">
+      <button class="whatsapp-widget__whatsapp-button" id="whatsapp-redirect-{{ section.id }}">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.63" fill="currentColor"/>
+        </svg>
+        Enviar no WhatsApp
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="7" y1="17" x2="17" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="7,7 17,7 17,17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Schedule -->
+    {%- if section.settings.show_schedule -%}
+      <div class="whatsapp-widget__schedule">
+        <div class="whatsapp-widget__schedule-header">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Horário de Atendimento
+        </div>
+        
+        <div class="whatsapp-widget__schedule-list">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'schedule' -%}
+              <div class="whatsapp-widget__schedule-item">
+                <span class="whatsapp-widget__schedule-day">{{ block.settings.day }}</span>
+                <span class="whatsapp-widget__schedule-time">{{ block.settings.time }}</span>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+        
+        {%- if section.settings.schedule_note != blank -%}
+          <div class="whatsapp-widget__schedule-note">
+            {{ section.settings.schedule_note }}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Chat WhatsApp",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Configurações Básicas"
+    },
+    {
+      "type": "text",
+      "id": "business_name",
+      "label": "Nome do Negócio",
+      "default": "Atendimento"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "Número do WhatsApp",
+      "info": "Formato: 5511999999999 (código do país + DDD + número)",
+      "placeholder": "5511999999999"
+    },
+    {
+      "type": "image_picker",
+      "id": "avatar",
+      "label": "Avatar do Atendimento"
+    },
+    {
+      "type": "textarea",
+      "id": "welcome_message",
+      "label": "Mensagem de Boas-vindas",
+      "default": "👋 Olá! Bem-vindo à nossa loja! Como posso ajudar você hoje?"
+    },
+    {
+      "type": "text",
+      "id": "input_placeholder",
+      "label": "Placeholder do Input",
+      "default": "Digite sua mensagem..."
+    },
+    {
+      "type": "header",
+      "content": "Status e Notificações"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_online",
+      "label": "Status Online",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_notification",
+      "label": "Mostrar Notificação",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "notification_count",
+      "label": "Número da Notificação",
+      "min": 1,
+      "max": 99,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tooltip",
+      "label": "Mostrar Tooltip",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tooltip_text",
+      "label": "Texto do Tooltip",
+      "default": "Precisa de ajuda?"
+    },
+    {
+      "type": "header",
+      "content": "Ações Rápidas"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_actions",
+      "label": "Mostrar Ações Rápidas",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Horário de Atendimento"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_schedule",
+      "label": "Mostrar Horário",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "schedule_note",
+      "label": "Nota do Horário",
+      "default": "Resposta em até 2 horas durante horário comercial"
+    },
+    {
+      "type": "header",
+      "content": "Comportamento"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_open",
+      "label": "Abrir Automaticamente",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "auto_open_delay",
+      "label": "Delay para Abrir (segundos)",
+      "min": 3,
+      "max": 30,
+      "step": 1,
+      "default": 10
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quick_action",
+      "name": "Ação Rápida",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Rastrear"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtítulo",
+          "default": "Meu pedido"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Ícone",
+          "options": [
+            {
+              "value": "package",
+              "label": "Pacote"
+            },
+            {
+              "value": "calculator",
+              "label": "Calculadora"
+            },
+            {
+              "value": "help",
+              "label": "Ajuda"
+            }
+          ],
+          "default": "package"
+        },
+        {
+          "type": "textarea",
+          "id": "message",
+          "label": "Mensagem",
+          "default": "Gostaria de rastrear meu pedido"
+        }
+      ]
+    },
+    {
+      "type": "schedule",
+      "name": "Horário",
+      "settings": [
+        {
+          "type": "text",
+          "id": "day",
+          "label": "Dia",
+          "default": "Segunda"
+        },
+        {
+          "type": "text",
+          "id": "time",
+          "label": "Horário",
+          "default": "09:00 - 18:00"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Chat WhatsApp",
+      "category": "Customer Service",
+      "blocks": [
+        {
+          "type": "quick_action",
+          "settings": {
+            "title": "Rastrear",
+            "subtitle": "Meu pedido",
+            "icon": "package",
+            "message": "Gostaria de rastrear meu pedido"
+          }
+        },
+        {
+          "type": "quick_action",
+          "settings": {
+            "title": "Calcular",
+            "subtitle": "Frete",
+            "icon": "calculator",
+            "message": "Gostaria de calcular o frete"
+          }
+        },
+        {
+          "type": "schedule",
+          "settings": {
+            "day": "Segunda",
+            "time": "09:00 - 18:00"
+          }
+        },
+        {
+          "type": "schedule",
+          "settings": {
+            "day": "Terça",
+            "time": "09:00 - 18:00"
+          }
+        },
+        {
+          "type": "schedule",
+          "settings": {
+            "day": "Quarta",
+            "time": "09:00 - 18:00"
+          }
+        },
+        {
+          "type": "schedule",
+          "settings": {
+            "day": "Quinta",
+            "time": "09:00 - 18:00"
+          }
+        },
+        {
+          "type": "schedule",
+          "settings": {
+            "day": "Sexta",
+            "time": "09:00 - 18:00"
+          }
+        },
+        {
+          "type": "schedule",
+          "settings": {
+            "day": "Sábado",
+            "time": "09:00 - 13:00"
+          }
+        },
+        {
+          "type": "schedule",
+          "settings": {
+            "day": "Domingo",
+            "time": "Fechado"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
