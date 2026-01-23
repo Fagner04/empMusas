@@ -946,6 +946,64 @@
           "link_title": "Ver tudo",
           "link_url": "shopify://collections/acessorios"
         }
+      },
+      "image_with_text_ircNmL": {
+        "type": "image-with-text",
+        "disabled": true,
+        "name": "Imagem com texto",
+        "settings": {
+          "image_position": "left",
+          "image_width": 50,
+          "title": "Seu título aqui",
+          "content": "<p>Use este texto para compartilhar informações sobre sua marca com seus clientes.<br/>Descreva um produto, compartilhe anúncios ou dê as boas-vindas aos clientes em sua loja.</p>",
+          "button_text": "Nossos produtos",
+          "button_link": "shopify://collections/all"
+        }
+      },
+      "carousel_teste_tBnAMe": {
+        "type": "carousel-teste",
+        "blocks": {
+          "category_f3D4T7": {
+            "type": "category",
+            "settings": {
+              "collection": "teste",
+              "title": "ccc"
+            }
+          },
+          "category_tURVjk": {
+            "type": "category",
+            "settings": {
+              "collection": "",
+              "title": ""
+            }
+          },
+          "category_VPkNTw": {
+            "type": "category",
+            "settings": {
+              "collection": "",
+              "title": ""
+            }
+          },
+          "category_GzMADU": {
+            "type": "category",
+            "settings": {
+              "collection": "",
+              "title": ""
+            }
+          }
+        },
+        "block_order": [
+          "category_f3D4T7",
+          "category_tURVjk",
+          "category_VPkNTw",
+          "category_GzMADU"
+        ],
+        "name": "Carousel de Produtos",
+        "settings": {
+          "title": "Produtos em Destaque",
+          "subtitle": "",
+          "products_per_category": 6
+        }
       }
     },
     "content_for_index": [
@@ -957,7 +1015,9 @@
       "16153539675ef431a7",
       "featured_collection_NaxHRH",
       "16494890143053ae61",
-      "slideshow_VWtgiT"
+      "slideshow_VWtgiT",
+      "image_with_text_ircNmL",
+      "carousel_teste_tBnAMe"
     ]
   },
   "presets": {
