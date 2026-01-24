@@ -1,0 +1,39 @@
+<!-- Checkout Customizado - Redirecionamento -->
+<script>
+(function() {
+  // Configurações
+  var CHECKOUT_URL = "https://conectwhats.vercel.app/checkout/@org-f782717b-8023-4a9d-a7c0-9c20f3a5839a";
+  
+  // Interceptar formulário de checkout
+  document.addEventListener('submit', function(e) {
+    var form = e.target;
+    if (form.action && form.action.includes('/cart')) {
+      e.preventDefault();
+      
+      // Pegar ID do produto do carrinho
+      var productInput = form.querySelector('[name="id"]');
+      var quantityInput = form.querySelector('[name="quantity"]');
+      
+      if (productInput) {
+        var productId = productInput.value;
+        var quantity = quantityInput ? quantityInput.value : 1;
+        
+        // Redirecionar para checkout customizado
+        window.location.href = CHECKOUT_URL + "?productId=" + productId + "&quantity=" + quantity;
+      }
+    }
+  });
+  
+  // Interceptar clique em botões de checkout
+  document.addEventListener('click', function(e) {
+    var target = e.target.closest('[name="checkout"], .shopify-payment-button, [data-checkout-url]');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Redirecionar para checkout com carrinho
+      window.location.href = CHECKOUT_URL;
+    }
+  });
+})();
+</script>
