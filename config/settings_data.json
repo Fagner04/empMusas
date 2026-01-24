@@ -1004,6 +1004,106 @@
           "subtitle": "",
           "products_per_category": 6
         }
+      },
+      "whatsapp_chat_widget_9dyMiL": {
+        "type": "whatsapp-chat-widget",
+        "blocks": {
+          "quick_action_QNi3Y7": {
+            "type": "quick_action",
+            "settings": {
+              "title": "Rastrear",
+              "subtitle": "Meu pedido",
+              "icon": "package",
+              "message": "Gostaria de rastrear meu pedido"
+            }
+          },
+          "quick_action_tYjTfB": {
+            "type": "quick_action",
+            "settings": {
+              "title": "Calcular",
+              "subtitle": "Frete",
+              "icon": "calculator",
+              "message": "Gostaria de calcular o frete"
+            }
+          },
+          "schedule_JhLg3n": {
+            "type": "schedule",
+            "settings": {
+              "day": "Segunda",
+              "time": "09:00 - 18:00"
+            }
+          },
+          "schedule_63e4zn": {
+            "type": "schedule",
+            "settings": {
+              "day": "Terça",
+              "time": "09:00 - 18:00"
+            }
+          },
+          "schedule_LD9HrT": {
+            "type": "schedule",
+            "settings": {
+              "day": "Quarta",
+              "time": "09:00 - 18:00"
+            }
+          },
+          "schedule_BEnT4Y": {
+            "type": "schedule",
+            "settings": {
+              "day": "Quinta",
+              "time": "09:00 - 18:00"
+            }
+          },
+          "schedule_3HTkbq": {
+            "type": "schedule",
+            "settings": {
+              "day": "Sexta",
+              "time": "09:00 - 18:00"
+            }
+          },
+          "schedule_HkRVN9": {
+            "type": "schedule",
+            "settings": {
+              "day": "Sábado",
+              "time": "09:00 - 13:00"
+            }
+          },
+          "schedule_398wPK": {
+            "type": "schedule",
+            "settings": {
+              "day": "Domingo",
+              "time": "Fechado"
+            }
+          }
+        },
+        "block_order": [
+          "quick_action_QNi3Y7",
+          "quick_action_tYjTfB",
+          "schedule_JhLg3n",
+          "schedule_63e4zn",
+          "schedule_LD9HrT",
+          "schedule_BEnT4Y",
+          "schedule_3HTkbq",
+          "schedule_HkRVN9",
+          "schedule_398wPK"
+        ],
+        "name": "Chat WhatsApp",
+        "settings": {
+          "business_name": "Atendimento e",
+          "whatsapp_number": "",
+          "welcome_message": "👋 Olá! Bem-vindo à nossa loja! Como posso ajudar você hoje?",
+          "input_placeholder": "Digite sua mensagem...",
+          "is_online": true,
+          "show_notification": true,
+          "notification_count": 3,
+          "show_tooltip": true,
+          "tooltip_text": "Precisa de ajuda?",
+          "show_quick_actions": true,
+          "show_schedule": true,
+          "schedule_note": "Resposta em até 2 horas durante horário comercial",
+          "auto_open": true,
+          "auto_open_delay": 10
+        }
       }
     },
     "content_for_index": [
@@ -1017,7 +1117,8 @@
       "16494890143053ae61",
       "slideshow_VWtgiT",
       "image_with_text_ircNmL",
-      "carousel_teste_tBnAMe"
+      "carousel_teste_tBnAMe",
+      "whatsapp_chat_widget_9dyMiL"
     ]
   },
   "presets": {
