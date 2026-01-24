@@ -963,6 +963,13 @@
       "carousel_teste_tBnAMe": {
         "type": "carousel-teste",
         "blocks": {
+          "category_cEH3AN": {
+            "type": "category",
+            "settings": {
+              "collection": "macacao",
+              "title": "ssdsdsd"
+            }
+          },
           "category_f3D4T7": {
             "type": "category",
             "settings": {
@@ -993,6 +1000,7 @@
           }
         },
         "block_order": [
+          "category_cEH3AN",
           "category_f3D4T7",
           "category_tURVjk",
           "category_VPkNTw",
