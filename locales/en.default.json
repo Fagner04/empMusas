@@ -478,6 +478,9 @@
       "payment": {
         "card_vaulted_company_location": "CPF",
         "business_customer_vaulting_payment_label": "CPF"
+      },
+      "payment_errors": {
+        "shipping_company_required_error": "CPF"
       }
     }
   }
