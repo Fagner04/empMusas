@@ -1,137 +1,166 @@
 <!-- Checkout Customizado - Redirecionamento -->
 <script>
 (function() {
-  // Configurações - EDITE AQUI
   var CHECKOUT_URL = "https://conectwhats.vercel.app/c/musasclub";
   var SKIP_CART = false; // true = redireciona direto | false = passa pelo carrinho primeiro
-  
-  // Função para redirecionar com itens do carrinho
-  function redirectWithCart() {
-    fetch('/cart.js')
-      .then(function(r) { return r.json(); })
-      .then(function(cart) {
-        if (cart.items && cart.items.length > 0) {
-          var items = encodeURIComponent(JSON.stringify(cart.items.map(function(item) {
-            return { id: item.variant_id, qty: item.quantity, name: item.title, price: item.price / 100, img: item.image };
-          })));
-          window.location.href = CHECKOUT_URL + "?items=" + items;
-        } else {
-          window.location.href = CHECKOUT_URL;
-        }
-      })
-      .catch(function() {
-        window.location.href = CHECKOUT_URL;
-      });
+  var DEBUG = false; // se ainda falhar, mude para true e me mande print do console
+
+  function log() {
+    if (!DEBUG || !window.console) return;
+    try { console.log.apply(console, arguments); } catch (e) {}
   }
-  
-  // Interceptar formulário de add to cart (SKIP_CART = true) OU checkout (SKIP_CART = false)
+
+  function redirectTo(url) {
+    try {
+      log('[custom-checkout] redirect →', url);
+      window.location.href = url;
+    } catch (e) {
+      window.location = url;
+    }
+  }
+
+  var CHECKOUT_SELECTORS = [
+    '[name="checkout"]',
+    '[type="submit"][name="checkout"]',
+    '.shopify-payment-button',
+    '.shopify-payment-button__button',
+    '[data-checkout-url]',
+    'button[name="checkout"]',
+    'input[name="checkout"]',
+    '.cart__checkout-button',
+    '.cart__checkout',
+    '.cart-checkout-button',
+    '[href*="/checkout"]',
+    '[href*="/checkouts"]',
+    '.checkout-button',
+    '#checkout',
+    '#CartSubmit',
+    '[data-action="checkout"]',
+    '[data-cart-checkout]',
+    '.cart__submit',
+    '.cart-drawer__checkout',
+    'form[action*="/checkout"] button',
+    'form[action*="/checkout"] input[type="submit"]',
+    'form[action*="/checkouts"] button',
+    'form[action*="/checkouts"] input[type="submit"]'
+  ].join(', ');
+
+  function redirectWithCart() {
+    var didRedirect = false;
+    var fallbackTimer = setTimeout(function() {
+      if (didRedirect) return;
+      didRedirect = true;
+      redirectTo(CHECKOUT_URL);
+    }, 2500);
+
+    try {
+      if (!window.fetch) {
+        clearTimeout(fallbackTimer);
+        didRedirect = true;
+        redirectTo(CHECKOUT_URL);
+        return;
+      }
+
+      fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(cart) {
+          if (didRedirect) return;
+          clearTimeout(fallbackTimer);
+
+          if (cart && cart.items && cart.items.length > 0) {
+            var cartParam = encodeURIComponent(cart.items.map(function(item) {
+              return String(item.variant_id) + ':' + String(item.quantity);
+            }).join(','));
+
+            didRedirect = true;
+            redirectTo(CHECKOUT_URL + "?cart=" + cartParam);
+          } else {
+            didRedirect = true;
+            redirectTo(CHECKOUT_URL);
+          }
+        })
+        .catch(function(err) {
+          log('[custom-checkout] erro ao buscar /cart.js:', err);
+          if (didRedirect) return;
+          clearTimeout(fallbackTimer);
+          didRedirect = true;
+          redirectTo(CHECKOUT_URL);
+        });
+    } catch (err) {
+      log('[custom-checkout] erro inesperado:', err);
+      clearTimeout(fallbackTimer);
+      if (!didRedirect) {
+        didRedirect = true;
+        redirectTo(CHECKOUT_URL);
+      }
+    }
+  }
+
+  // submit (captura)
   document.addEventListener('submit', function(e) {
     var form = e.target;
-    var action = form.action || '';
-    
-    // Se SKIP_CART = true, intercepta add to cart
+    if (!form || !form.action) return;
+
+    var submitter = e.submitter || document.activeElement;
+    var formaction = submitter && submitter.getAttribute ? submitter.getAttribute('formaction') : '';
+    var action = (formaction || form.action || '').toLowerCase();
+
+    // SKIP_CART=true: intercepta add-to-cart
     if (SKIP_CART && action.includes('/cart')) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+
       var productInput = form.querySelector('[name="id"]');
       var quantityInput = form.querySelector('[name="quantity"]');
-      
+
       if (productInput) {
         var productId = productInput.value;
         var quantity = quantityInput ? quantityInput.value : 1;
-        window.location.href = CHECKOUT_URL + "/" + productId + "?quantity=" + quantity;
+        redirectTo(CHECKOUT_URL + "/" + productId + "?quantity=" + quantity);
       }
       return false;
     }
-    
-    // Se SKIP_CART = false, intercepta o formulário de checkout na página do carrinho
-    if (!SKIP_CART && (action.includes('/checkout') || form.querySelector('[name="checkout"]'))) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
+
+    // SKIP_CART=false: só intercepta se o submitter for checkout (evita travar “atualizar carrinho”)
+    if (!SKIP_CART) {
+      var submitterIsCheckout = !!(submitter && submitter.closest && submitter.closest(CHECKOUT_SELECTORS));
+      var actionIsCheckout = action.includes('/checkout') || action.includes('/checkouts');
+      if (!submitterIsCheckout && !actionIsCheckout) return;
+
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
       redirectWithCart();
       return false;
     }
   }, true);
-  
-  // Interceptar clique em botões de checkout (seletores ampliados para mais temas)
+
+  // click (captura)
   document.addEventListener('click', function(e) {
-    var checkoutSelectors = [
-      '[name="checkout"]',
-      '[type="submit"][name="checkout"]',
-      '.shopify-payment-button',
-      '.shopify-payment-button__button',
-      '[data-checkout-url]',
-      'button[name="checkout"]',
-      'input[name="checkout"]',
-      '.cart__checkout-button',
-      '.cart__checkout',
-      '.cart-checkout-button',
-      '[href*="/checkout"]',
-      '[href*="/checkouts"]',
-      '.checkout-button',
-      '#checkout',
-      '#CartSubmit',
-      '[data-action="checkout"]',
-      '[data-cart-checkout]',
-      '.cart__submit',
-      '.cart-drawer__checkout',
-      'form[action*="/checkout"] button',
-      'form[action*="/checkout"] input[type="submit"]'
-    ].join(', ');
-    
-    var target = e.target.closest(checkoutSelectors);
-    if (target) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      redirectWithCart();
-      return false;
-    }
-  }, true);
-  
-  // Interceptar submit de formulários de checkout
-  document.querySelectorAll('form[action*="/checkout"], form[action*="/checkouts"]').forEach(function(form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      redirectWithCart();
-      return false;
-    }, true);
-  });
-  
-  // Interceptar navegação para /checkout (fallback)
-  var originalPushState = history.pushState;
-  history.pushState = function() {
-    originalPushState.apply(history, arguments);
-    if (window.location.pathname.includes('/checkout')) {
-      redirectWithCart();
-    }
-  };
-  
-  // Monitorar mudanças no DOM para novos botões de checkout
-  var observer = new MutationObserver(function() {
-    document.querySelectorAll('form[action*="/checkout"], form[action*="/checkouts"]').forEach(function(form) {
-      if (!form.dataset.checkoutIntercepted) {
-        form.dataset.checkoutIntercepted = 'true';
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          redirectWithCart();
-          return false;
-        }, true);
-      }
-    });
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-  
-  // Verificar se já estamos no checkout
-  if (window.location.pathname.includes('/checkout')) {
+    if (SKIP_CART) return;
+    if (!e.target || !e.target.closest) return;
+
+    var target = e.target.closest(CHECKOUT_SELECTORS);
+    if (!target) return;
+
+    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
     redirectWithCart();
+    return false;
+  }, true);
+
+  // fallback: temas que fazem checkout via location.assign/replace
+  function patchLocationMethod(methodName) {
+    try {
+      var original = window.location[methodName].bind(window.location);
+      window.location[methodName] = function(url) {
+        try {
+          if (!SKIP_CART && typeof url === 'string' && (url.indexOf('/checkout') !== -1 || url.indexOf('/checkouts') !== -1)) {
+            redirectWithCart();
+            return;
+          }
+        } catch (e) {}
+        return original(url);
+      };
+    } catch (e) {}
   }
+  patchLocationMethod('assign');
+  patchLocationMethod('replace');
 })();
 </script>
