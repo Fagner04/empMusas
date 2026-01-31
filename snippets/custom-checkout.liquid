@@ -24,26 +24,35 @@
       });
   }
   
-  // Interceptar formulário de add to cart
+  // Interceptar formulário de add to cart (SKIP_CART = true) OU checkout (SKIP_CART = false)
   document.addEventListener('submit', function(e) {
     var form = e.target;
-    if (form.action && form.action.includes('/cart')) {
-      if (SKIP_CART) {
-        e.preventDefault();
-        
-        // Pegar ID do produto do formulário
-        var productInput = form.querySelector('[name="id"]');
-        var quantityInput = form.querySelector('[name="quantity"]');
-        
-        if (productInput) {
-          var productId = productInput.value;
-          var quantity = quantityInput ? quantityInput.value : 1;
-          
-          // Redirecionar direto para checkout customizado
-          window.location.href = CHECKOUT_URL + "/" + productId + "?quantity=" + quantity;
-        }
+    var action = form.action || '';
+    
+    // Se SKIP_CART = true, intercepta add to cart
+    if (SKIP_CART && action.includes('/cart')) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      var productInput = form.querySelector('[name="id"]');
+      var quantityInput = form.querySelector('[name="quantity"]');
+      
+      if (productInput) {
+        var productId = productInput.value;
+        var quantity = quantityInput ? quantityInput.value : 1;
+        window.location.href = CHECKOUT_URL + "/" + productId + "?quantity=" + quantity;
       }
-      // Se SKIP_CART = false, deixa o carrinho Shopify funcionar normalmente
+      return false;
+    }
+    
+    // Se SKIP_CART = false, intercepta o formulário de checkout na página do carrinho
+    if (!SKIP_CART && (action.includes('/checkout') || form.querySelector('[name="checkout"]'))) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      redirectWithCart();
+      return false;
     }
   }, true);
   
@@ -53,15 +62,24 @@
       '[name="checkout"]',
       '[type="submit"][name="checkout"]',
       '.shopify-payment-button',
+      '.shopify-payment-button__button',
       '[data-checkout-url]',
       'button[name="checkout"]',
       'input[name="checkout"]',
       '.cart__checkout-button',
+      '.cart__checkout',
       '.cart-checkout-button',
       '[href*="/checkout"]',
+      '[href*="/checkouts"]',
       '.checkout-button',
       '#checkout',
-      '[data-action="checkout"]'
+      '#CartSubmit',
+      '[data-action="checkout"]',
+      '[data-cart-checkout]',
+      '.cart__submit',
+      '.cart-drawer__checkout',
+      'form[action*="/checkout"] button',
+      'form[action*="/checkout"] input[type="submit"]'
     ].join(', ');
     
     var target = e.target.closest(checkoutSelectors);
@@ -72,7 +90,18 @@
       redirectWithCart();
       return false;
     }
-  }, true); // Use capture phase para pegar o evento antes de outros handlers
+  }, true);
+  
+  // Interceptar submit de formulários de checkout
+  document.querySelectorAll('form[action*="/checkout"], form[action*="/checkouts"]').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      redirectWithCart();
+      return false;
+    }, true);
+  });
   
   // Interceptar navegação para /checkout (fallback)
   var originalPushState = history.pushState;
@@ -82,6 +111,23 @@
       redirectWithCart();
     }
   };
+  
+  // Monitorar mudanças no DOM para novos botões de checkout
+  var observer = new MutationObserver(function() {
+    document.querySelectorAll('form[action*="/checkout"], form[action*="/checkouts"]').forEach(function(form) {
+      if (!form.dataset.checkoutIntercepted) {
+        form.dataset.checkoutIntercepted = 'true';
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          redirectWithCart();
+          return false;
+        }, true);
+      }
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
   
   // Verificar se já estamos no checkout
   if (window.location.pathname.includes('/checkout')) {
