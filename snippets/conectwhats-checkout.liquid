@@ -16,6 +16,29 @@
     try { console.log.apply(console, args); } catch (e) {}
   }
 
+  // ===== Polyfills (compatibilidade com browsers/temas antigos) =====
+  try {
+    if (window.NodeList && !NodeList.prototype.forEach) {
+      NodeList.prototype.forEach = Array.prototype.forEach;
+    }
+  } catch (e) {}
+
+  try {
+    if (window.Element && !Element.prototype.matches) {
+      Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+    }
+    if (window.Element && !Element.prototype.closest) {
+      Element.prototype.closest = function(selector) {
+        var el = this;
+        while (el && el.nodeType === 1) {
+          if (el.matches && el.matches(selector)) return el;
+          el = el.parentElement || el.parentNode;
+        }
+        return null;
+      };
+    }
+  } catch (e) {}
+
   log('✓ Script carregado. SKIP_CART=' + SKIP_CART);
 
   function redirectTo(url) {
@@ -78,6 +101,16 @@
   
   // Palavras-chave que indicam checkout
   var CHECKOUT_KEYWORDS = ['checkout', 'finalizar', 'comprar', 'buy', 'purchase', 'proceed', 'pagar'];
+
+  // ===== INTENÇÃO (evitar falso-positivo em submits programáticos) =====
+  var __ccCheckoutIntentAt = 0;
+  function markCheckoutIntent(reason) {
+    __ccCheckoutIntentAt = Date.now();
+    log('⚑ Intent checkout:', reason);
+  }
+  function hasRecentCheckoutIntent() {
+    return Date.now() - __ccCheckoutIntentAt < 1500;
+  }
   
   function isCheckoutElement(el) {
     if (!el) return false;
@@ -163,6 +196,70 @@
       }
     }
   }
+
+  // ===== PATCH: form.submit / requestSubmit (bypass de evento submit) =====
+  (function patchFormSubmit() {
+    // Alguns temas chamam form.submit() direto (isso NÃO dispara evento submit)
+    try {
+      if (window.HTMLFormElement && HTMLFormElement.prototype && !HTMLFormElement.prototype.__ccSubmitPatched) {
+        HTMLFormElement.prototype.__ccSubmitPatched = true;
+        var originalSubmit = HTMLFormElement.prototype.submit;
+        HTMLFormElement.prototype.submit = function() {
+          try {
+            var form = this;
+            var active = document.activeElement;
+            var activeName = active ? (active.name || '').toLowerCase() : '';
+            var activeText = active ? (active.textContent || active.value || '').toLowerCase() : '';
+
+            var activeLooksLikeCheckout = activeName === 'checkout' ||
+              activeText.indexOf('checkout') !== -1 ||
+              activeText.indexOf('finalizar') !== -1 ||
+              activeText.indexOf('comprar') !== -1;
+
+            var action = (form.action || '').toLowerCase();
+            var formHasCheckoutButton = !!(form.querySelector && form.querySelector('[name="checkout"], [type="submit"][name="checkout"], button[name="checkout"], input[name="checkout"]'));
+
+            if ((activeLooksLikeCheckout || hasRecentCheckoutIntent()) && (formHasCheckoutButton || action.indexOf('/checkout') !== -1 || action.indexOf('/cart') !== -1)) {
+              log('>>> form.submit() interceptado!');
+              markCheckoutIntent('form.submit');
+              redirectWithCart();
+              return;
+            }
+          } catch (e) {}
+          return originalSubmit.apply(this, arguments);
+        };
+        log('✓ Patched HTMLFormElement.submit');
+      }
+    } catch (e) {
+      log('Não foi possível patchar HTMLFormElement.submit', e);
+    }
+
+    // requestSubmit geralmente dispara submit, mas alguns temas usam direto
+    try {
+      if (window.HTMLFormElement && HTMLFormElement.prototype && HTMLFormElement.prototype.requestSubmit && !HTMLFormElement.prototype.__ccRequestSubmitPatched) {
+        HTMLFormElement.prototype.__ccRequestSubmitPatched = true;
+        var originalRequestSubmit = HTMLFormElement.prototype.requestSubmit;
+        HTMLFormElement.prototype.requestSubmit = function(submitter) {
+          try {
+            var s = submitter || document.activeElement;
+            var sName = s ? (s.name || '').toLowerCase() : '';
+            var sText = s ? (s.textContent || s.value || '').toLowerCase() : '';
+            var isCheckout = sName === 'checkout' || sText.indexOf('checkout') !== -1 || sText.indexOf('finalizar') !== -1 || sText.indexOf('comprar') !== -1;
+            if (isCheckout) {
+              log('>>> form.requestSubmit() interceptado!');
+              markCheckoutIntent('form.requestSubmit');
+              redirectWithCart();
+              return;
+            }
+          } catch (e) {}
+          return originalRequestSubmit.apply(this, arguments);
+        };
+        log('✓ Patched HTMLFormElement.requestSubmit');
+      }
+    } catch (e) {
+      log('Não foi possível patchar HTMLFormElement.requestSubmit', e);
+    }
+  })();
   
   // ===== INTERCEPTAR FORMS DE CHECKOUT DIRETAMENTE =====
   function attachToCheckoutForms() {
@@ -194,6 +291,7 @@
                 submitterText.indexOf('finalizar') !== -1 ||
                 submitterText.indexOf('comprar') !== -1) {
               log('>>> FORM SUBMIT interceptado!');
+              markCheckoutIntent('submit(form)');
               e.preventDefault();
               e.stopPropagation();
               e.stopImmediatePropagation();
@@ -227,6 +325,7 @@
               
               btn.addEventListener('click', function(e) {
                 log('>>> BOTÃO no FORM clicado!');
+                 markCheckoutIntent('click(btn-in-form)');
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -270,6 +369,7 @@
 
     if (isCheckout && action.indexOf('/cart/add') === -1) {
       log('>>> CHECKOUT via SUBMIT GLOBAL interceptado!');
+      markCheckoutIntent('submit(global)');
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -314,6 +414,7 @@
 
     if (matched) {
       log('>>> CLICK em checkout detectado!', matched.tagName, (matched.textContent || '').substring(0, 30));
+      markCheckoutIntent('click(delegate)');
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -337,6 +438,7 @@
     var href = link.getAttribute('href') || '';
     if (href.indexOf('/checkout') !== -1 || href.indexOf('/checkouts') !== -1) {
       log('>>> LINK de checkout interceptado!', href);
+      markCheckoutIntent('click(link)');
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -401,6 +503,7 @@
         
         btn.addEventListener('click', function(e) {
           log('>>> BOTÃO checkout clicado diretamente!');
+          markCheckoutIntent('click(attached-btn)');
           e.preventDefault();
           e.stopPropagation();
           e.stopImmediatePropagation();
