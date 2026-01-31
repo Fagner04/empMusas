@@ -1,24 +1,33 @@
 <!-- Checkout Customizado - Redirecionamento -->
 <script>
 (function() {
+  // ========== CONFIGURAÇÕES - EDITE AQUI ==========
   var CHECKOUT_URL = "https://conectwhats.vercel.app/c/musasclub";
-  var SKIP_CART = true; // true = redireciona direto | false = passa pelo carrinho primeiro
-  var DEBUG = true; // se ainda falhar, mude para true e me mande print do console
+  var SKIP_CART = true; // true = redireciona direto do produto | false = passa pelo carrinho
+  var DEBUG = true; // true = mostra logs no console (desative em produção)
+  // ================================================
+
+  // Expor variáveis globalmente para debug (opcional)
+  window.__CUSTOM_CHECKOUT__ = { CHECKOUT_URL: CHECKOUT_URL, SKIP_CART: SKIP_CART, DEBUG: DEBUG };
 
   function log() {
-    if (!DEBUG || !window.console) return;
-    try { console.log.apply(console, arguments); } catch (e) {}
+    if (!DEBUG) return;
+    var args = ['[custom-checkout]'].concat(Array.prototype.slice.call(arguments));
+    try { console.log.apply(console, args); } catch (e) {}
   }
 
+  log('Script carregado. SKIP_CART=' + SKIP_CART + ', CHECKOUT_URL=' + CHECKOUT_URL);
+
   function redirectTo(url) {
+    log('Redirecionando para:', url);
     try {
-      log('[custom-checkout] redirect →', url);
       window.location.href = url;
     } catch (e) {
       window.location = url;
     }
   }
 
+  // Seletores de botões de checkout (ampliados)
   var CHECKOUT_SELECTORS = [
     '[name="checkout"]',
     '[type="submit"][name="checkout"]',
@@ -42,19 +51,27 @@
     'form[action*="/checkout"] button',
     'form[action*="/checkout"] input[type="submit"]',
     'form[action*="/checkouts"] button',
-    'form[action*="/checkouts"] input[type="submit"]'
+    'form[action*="/checkouts"] input[type="submit"]',
+    '.cart__ctas button',
+    '.cart-drawer__cta button',
+    '[data-checkout]',
+    '.btn--checkout'
   ].join(', ');
-
+  
+  // Redirecionar com itens do carrinho
   function redirectWithCart() {
+    log('Buscando itens do carrinho...');
     var didRedirect = false;
     var fallbackTimer = setTimeout(function() {
       if (didRedirect) return;
       didRedirect = true;
+      log('Timeout - redirecionando sem itens');
       redirectTo(CHECKOUT_URL);
     }, 2500);
 
     try {
       if (!window.fetch) {
+        log('Fetch não disponível, redirecionando direto');
         clearTimeout(fallbackTimer);
         didRedirect = true;
         redirectTo(CHECKOUT_URL);
@@ -66,6 +83,8 @@
         .then(function(cart) {
           if (didRedirect) return;
           clearTimeout(fallbackTimer);
+
+          log('Carrinho obtido:', cart.items ? cart.items.length + ' itens' : 'vazio');
 
           if (cart && cart.items && cart.items.length > 0) {
             var cartParam = encodeURIComponent(cart.items.map(function(item) {
@@ -80,14 +99,14 @@
           }
         })
         .catch(function(err) {
-          log('[custom-checkout] erro ao buscar /cart.js:', err);
+          log('Erro ao buscar /cart.js:', err);
           if (didRedirect) return;
           clearTimeout(fallbackTimer);
           didRedirect = true;
           redirectTo(CHECKOUT_URL);
         });
     } catch (err) {
-      log('[custom-checkout] erro inesperado:', err);
+      log('Erro inesperado:', err);
       clearTimeout(fallbackTimer);
       if (!didRedirect) {
         didRedirect = true;
@@ -95,72 +114,119 @@
       }
     }
   }
-
-  // submit (captura)
+  
+  // ===== INTERCEPTAÇÃO DE SUBMIT =====
   document.addEventListener('submit', function(e) {
     var form = e.target;
-    if (!form || !form.action) return;
+    if (!form || form.tagName !== 'FORM') return;
 
     var submitter = e.submitter || document.activeElement;
-    var formaction = submitter && submitter.getAttribute ? submitter.getAttribute('formaction') : '';
+    var formaction = (submitter && submitter.getAttribute) ? submitter.getAttribute('formaction') : '';
     var action = (formaction || form.action || '').toLowerCase();
 
-    // SKIP_CART=true: intercepta add-to-cart
-    if (SKIP_CART && action.includes('/cart')) {
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+    log('Submit capturado:', { action: action, submitter: submitter ? submitter.outerHTML.substring(0, 100) : 'nenhum' });
 
-      var productInput = form.querySelector('[name="id"]');
-      var quantityInput = form.querySelector('[name="quantity"]');
+    // Detectar se é checkout
+    var submitterIsCheckout = !!(submitter && submitter.closest && submitter.closest(CHECKOUT_SELECTORS));
+    var actionIsCheckout = action.indexOf('/checkout') !== -1 || action.indexOf('/checkouts') !== -1;
+    var submitterNameCheckout = !!(submitter && submitter.name === 'checkout');
 
-      if (productInput) {
-        var productId = productInput.value;
-        var quantity = quantityInput ? quantityInput.value : 1;
-        redirectTo(CHECKOUT_URL + "/" + productId + "?quantity=" + quantity);
-      }
-      return false;
-    }
-
-    // SKIP_CART=false: só intercepta se o submitter for checkout (evita travar “atualizar carrinho”)
-    if (!SKIP_CART) {
-      var submitterIsCheckout = !!(submitter && submitter.closest && submitter.closest(CHECKOUT_SELECTORS));
-      var actionIsCheckout = action.includes('/checkout') || action.includes('/checkouts');
-      if (!submitterIsCheckout && !actionIsCheckout) return;
-
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+    if (submitterIsCheckout || actionIsCheckout || submitterNameCheckout) {
+      log('>>> CHECKOUT detectado via SUBMIT - interceptando');
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       redirectWithCart();
       return false;
     }
-  }, true);
 
-  // click (captura)
+    // SKIP_CART=true: interceptar add-to-cart
+    if (SKIP_CART && (action.indexOf('/cart/add') !== -1)) {
+      var productInput = form.querySelector('[name="id"]');
+      if (!productInput) return;
+
+      log('>>> ADD-TO-CART detectado - interceptando');
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      var quantityInput = form.querySelector('[name="quantity"]');
+      var productId = productInput.value;
+      var quantity = quantityInput ? quantityInput.value : 1;
+      redirectTo(CHECKOUT_URL + "/" + productId + "?quantity=" + quantity);
+      return false;
+    }
+  }, true);
+  
+  // ===== INTERCEPTAÇÃO DE CLICK =====
   document.addEventListener('click', function(e) {
-    if (SKIP_CART) return;
-    if (!e.target || !e.target.closest) return;
+    if (!e.target) return;
 
-    var target = e.target.closest(CHECKOUT_SELECTORS);
-    if (!target) return;
+    // Buscar elemento clicado ou ancestral que case com seletores
+    var target = e.target;
+    var matched = null;
 
-    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-    redirectWithCart();
-    return false;
+    // Tentar match direto e ancestrais
+    if (target.matches && target.matches(CHECKOUT_SELECTORS)) {
+      matched = target;
+    } else if (target.closest) {
+      matched = target.closest(CHECKOUT_SELECTORS);
+    }
+
+    if (matched) {
+      log('>>> CLICK em elemento checkout detectado:', matched.outerHTML.substring(0, 150));
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      redirectWithCart();
+      return false;
+    }
+
+    // Log de cliques para debug (quando DEBUG=true)
+    if (DEBUG) {
+      var tagInfo = target.tagName + (target.name ? '[name=' + target.name + ']' : '') + (target.className ? '.' + String(target.className).split(' ').join('.') : '');
+      log('Click em:', tagInfo);
+    }
   }, true);
 
-  // fallback: temas que fazem checkout via location.assign/replace
+  // ===== PATCH DE location.assign/replace =====
   function patchLocationMethod(methodName) {
     try {
-      var original = window.location[methodName].bind(window.location);
-      window.location[methodName] = function(url) {
-        try {
-          if (!SKIP_CART && typeof url === 'string' && (url.indexOf('/checkout') !== -1 || url.indexOf('/checkouts') !== -1)) {
-            redirectWithCart();
-            return;
-          }
-        } catch (e) {}
-        return original(url);
-      };
-    } catch (e) {}
+      var original = window.location[methodName];
+      if (typeof original !== 'function') return;
+
+      Object.defineProperty(window.location, methodName, {
+        value: function(url) {
+          try {
+            if (typeof url === 'string' && (url.indexOf('/checkout') !== -1 || url.indexOf('/checkouts') !== -1)) {
+              log('>>> location.' + methodName + ' para checkout interceptado:', url);
+              redirectWithCart();
+              return;
+            }
+          } catch (e) {}
+          return original.call(window.location, url);
+        },
+        writable: true,
+        configurable: true
+      });
+      log('Patched location.' + methodName);
+    } catch (e) {
+      log('Não foi possível fazer patch de location.' + methodName);
+    }
   }
+
   patchLocationMethod('assign');
   patchLocationMethod('replace');
+
+  // Log dos seletores de checkout encontrados na página
+  setTimeout(function() {
+    try {
+      var found = document.querySelectorAll(CHECKOUT_SELECTORS);
+      log('Elementos de checkout encontrados na página:', found.length);
+      for (var i = 0; i < Math.min(found.length, 5); i++) {
+        log('  -', found[i].outerHTML.substring(0, 120));
+      }
+    } catch (e) {}
+  }, 1000);
 })();
 </script>
