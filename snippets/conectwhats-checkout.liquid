@@ -95,12 +95,67 @@
     '#cart-notification-button',
     '.ajax-cart__checkout',
     
-    // Texto do botão (fallback)
-    'button:not([type="button"])'
+    // OBS: Evite seletor genérico de "todo button" aqui.
+    // O fallback de compatibilidade acontece via CHECKOUT_KEYWORDS dentro do isCheckoutElement().
   ].join(', ');
   
   // Palavras-chave que indicam checkout
   var CHECKOUT_KEYWORDS = ['checkout', 'finalizar', 'comprar', 'buy', 'purchase', 'proceed', 'pagar'];
+
+  // ===== CONTEXTO (evitar falso-positivo em páginas de produto) =====
+  function closestFormAction(el) {
+    try {
+      var f = el && el.closest ? el.closest('form') : null;
+      return (f && f.action) ? String(f.action).toLowerCase() : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function isAddToCartAction(action) {
+    return !!action && action.indexOf('/cart/add') !== -1;
+  }
+
+  function isCartContext() {
+    // Cart page
+    try {
+      var p = (window.location && window.location.pathname) ? String(window.location.pathname).toLowerCase() : '';
+      if (p.indexOf('/cart') !== -1 && p.indexOf('/cart/add') === -1) return true;
+    } catch (e) {}
+
+    // Cart drawer / notification (best-effort)
+    try {
+      // Preferir seletores que indicam estado "aberto"
+      var openEl = document.querySelector(
+        '.cart-drawer[open], .cart-drawer.active, .cart-drawer.is-active, .cart-drawer[aria-hidden="false"],
+' +
+        'cart-drawer[open], cart-drawer[aria-hidden="false"],
+' +
+        '#CartDrawer[open], #CartDrawer[aria-hidden="false"],
+' +
+        '.cart-notification.active, .cart-notification[aria-hidden="false"]'
+      );
+      if (openEl) return true;
+
+      // Fallback: existe algum drawer relevante e ele não está marcado como hidden
+      var drawer = document.querySelector('.cart-drawer, cart-drawer, #CartDrawer, [id*="CartDrawer"], [data-cart-drawer], .drawer--cart, .cart-notification');
+      if (drawer) {
+        var ariaHidden = (drawer.getAttribute && drawer.getAttribute('aria-hidden')) ? String(drawer.getAttribute('aria-hidden')).toLowerCase() : '';
+        if (ariaHidden === 'true') return false;
+        var st = window.getComputedStyle ? window.getComputedStyle(drawer) : null;
+        if (!st) return true;
+        if (st.display !== 'none' && st.visibility !== 'hidden' && st.opacity !== '0') return true;
+      }
+    } catch (e) {}
+
+    return false;
+  }
+
+  function shouldInterceptCheckoutHere() {
+    // SKIP_CART=true: intercepta em qualquer lugar
+    // SKIP_CART=false: só intercepta no contexto do carrinho (página /cart ou cart drawer)
+    return !!SKIP_CART || isCartContext();
+  }
 
   // ===== INTENÇÃO (evitar falso-positivo em submits programáticos) =====
   var __ccCheckoutIntentAt = 0;
@@ -114,6 +169,15 @@
   
   function isCheckoutElement(el) {
     if (!el) return false;
+
+    // IMPORTANTE (SKIP_CART=false): se o elemento está dentro de um form de add-to-cart,
+    // ele NÃO deve ser tratado como checkout (muitos temas usam texto "Comprar" no botão de adicionar).
+    try {
+      if (!SKIP_CART) {
+        var formAction = closestFormAction(el);
+        if (isAddToCartAction(formAction)) return false;
+      }
+    } catch (e) {}
     
     // Match por seletor
     try {
@@ -217,7 +281,16 @@
               activeText.indexOf('comprar') !== -1;
 
             var action = (form.action || '').toLowerCase();
+
+            // SKIP_CART=false: nunca interceptar submit de add-to-cart
+            if (!SKIP_CART && isAddToCartAction(action)) {
+              return originalSubmit.apply(this, arguments);
+            }
             var formHasCheckoutButton = !!(form.querySelector && form.querySelector('[name="checkout"], [type="submit"][name="checkout"], button[name="checkout"], input[name="checkout"]'));
+
+            if (!shouldInterceptCheckoutHere()) {
+              return originalSubmit.apply(this, arguments);
+            }
 
             if ((activeLooksLikeCheckout || hasRecentCheckoutIntent()) && (formHasCheckoutButton || action.indexOf('/checkout') !== -1 || action.indexOf('/cart') !== -1)) {
               log('>>> form.submit() interceptado!');
@@ -242,10 +315,16 @@
         HTMLFormElement.prototype.requestSubmit = function(submitter) {
           try {
             var s = submitter || document.activeElement;
+            if (!SKIP_CART && isAddToCartAction(closestFormAction(s))) {
+              return originalRequestSubmit.apply(this, arguments);
+            }
             var sName = s ? (s.name || '').toLowerCase() : '';
             var sText = s ? (s.textContent || s.value || '').toLowerCase() : '';
             var isCheckout = sName === 'checkout' || sText.indexOf('checkout') !== -1 || sText.indexOf('finalizar') !== -1 || sText.indexOf('comprar') !== -1;
             if (isCheckout) {
+              if (!shouldInterceptCheckoutHere()) {
+                return originalRequestSubmit.apply(this, arguments);
+              }
               log('>>> form.requestSubmit() interceptado!');
               markCheckoutIntent('form.requestSubmit');
               redirectWithCart();
@@ -273,7 +352,9 @@
         
         var action = (form.action || '').toLowerCase();
         var hasCheckoutButton = form.querySelector('[name="checkout"], [type="submit"][name="checkout"], .cart__checkout-button, .checkout-button');
-        var isCheckoutForm = action.indexOf('/checkout') !== -1 || action.indexOf('/cart') !== -1;
+        var isAddToCart = action.indexOf('/cart/add') !== -1;
+        var isCartForm = action.indexOf('/cart') !== -1 && !isAddToCart;
+        var isCheckoutForm = action.indexOf('/checkout') !== -1 || action.indexOf('/checkouts') !== -1 || isCartForm;
         
         if (hasCheckoutButton || isCheckoutForm) {
           form.__ccFormAttached = true;
@@ -281,6 +362,7 @@
           
           // Listener de submit com alta prioridade
           form.addEventListener('submit', function(e) {
+            if (!shouldInterceptCheckoutHere()) return;
             var submitter = e.submitter || document.activeElement;
             var submitterName = submitter ? (submitter.name || '').toLowerCase() : '';
             var submitterText = submitter ? (submitter.textContent || '').toLowerCase() : '';
@@ -324,6 +406,7 @@
               log('✓ Botão checkout no form:', text.substring(0, 20));
               
               btn.addEventListener('click', function(e) {
+                if (!shouldInterceptCheckoutHere()) return;
                 log('>>> BOTÃO no FORM clicado!');
                  markCheckoutIntent('click(btn-in-form)');
                 e.preventDefault();
@@ -368,6 +451,7 @@
                      action.indexOf('/checkout') !== -1;
 
     if (isCheckout && action.indexOf('/cart/add') === -1) {
+      if (!shouldInterceptCheckoutHere()) return;
       log('>>> CHECKOUT via SUBMIT GLOBAL interceptado!');
       markCheckoutIntent('submit(global)');
       e.preventDefault();
@@ -413,6 +497,7 @@
     }
 
     if (matched) {
+      if (!shouldInterceptCheckoutHere()) return;
       log('>>> CLICK em checkout detectado!', matched.tagName, (matched.textContent || '').substring(0, 30));
       markCheckoutIntent('click(delegate)');
       e.preventDefault();
@@ -437,6 +522,7 @@
     
     var href = link.getAttribute('href') || '';
     if (href.indexOf('/checkout') !== -1 || href.indexOf('/checkouts') !== -1) {
+      if (!shouldInterceptCheckoutHere()) return;
       log('>>> LINK de checkout interceptado!', href);
       markCheckoutIntent('click(link)');
       e.preventDefault();
@@ -460,6 +546,9 @@
         value: function(url) {
           try {
             if (typeof url === 'string' && (url.indexOf('/checkout') !== -1 || url.indexOf('/checkouts') !== -1)) {
+              if (!shouldInterceptCheckoutHere() && !hasRecentCheckoutIntent()) {
+                return original.call(window.location, url);
+              }
               log('>>> location.' + methodName + ' interceptado!');
               redirectWithCart();
               return;
@@ -497,11 +586,13 @@
       
       validButtons.forEach(function(btn, i) {
         if (btn.__ccAttached) return;
+        if (!isCheckoutElement(btn)) return;
         btn.__ccAttached = true;
         
         log('  - ' + btn.outerHTML.substring(0, 80));
         
         btn.addEventListener('click', function(e) {
+          if (!shouldInterceptCheckoutHere()) return;
           log('>>> BOTÃO checkout clicado diretamente!');
           markCheckoutIntent('click(attached-btn)');
           e.preventDefault();
